@@ -232,12 +232,13 @@ import { getFirestore, doc, getDoc, collection, getDocs } from 'https://www.gsta
 
 // CONFIGURA QUI I DATI DEL TUO PROGETTO FIREBASE. NON INSERIRE PASSWORD O SERVICE ACCOUNT.
 const firebaseConfig = {
-  apiKey: 'INSERISCI_API_KEY',
-  authDomain: 'INSERISCI_AUTH_DOMAIN',
-  projectId: 'INSERISCI_PROJECT_ID',
-  storageBucket: 'INSERISCI_STORAGE_BUCKET',
-  messagingSenderId: 'INSERISCI_MESSAGING_SENDER_ID',
-  appId: 'INSERISCI_APP_ID'
+  apiKey: "AIzaSyCCwyaQa0W40jQyUfsGkBOISpAvPMLvPYU",
+  authDomain: "dastyfly-4ff9e.firebaseapp.com",
+  databaseURL: "https://dastyfly-4ff9e-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "dastyfly-4ff9e",
+  storageBucket: "dastyfly-4ff9e.firebasestorage.app",
+  messagingSenderId: "575748971830",
+  appId: "1:575748971830:web:42d0cb273579e4488ca797"
 };
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
