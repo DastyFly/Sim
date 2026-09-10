@@ -5,21 +5,22 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>DastyFlySim — Gestionale</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root{
   --navy-900:#08152b; --navy-800:#0d2142; --navy-700:#123061; --navy-600:#1a4080;
-  --bg:#eef1f7; --panel:#ffffff; --border:#dde3ee; --border-soft:#e7ebf3;
-  --text:#12203a; --muted:#66738c; --muted-soft:#8b96ab;
+  --bg:#dfe2e9; --panel:#fbfbfa; --border:#d2d7e0; --border-soft:#e2e5ec;
+  --text:#1b2436; --muted:#5c6579; --muted-soft:#868faa;
   --red:#d81324; --red-dark:#b10f1e; --red-soft:#fdeaec;
   --green:#178a53; --green-soft:#e7f7ee;
   --amber:#c8790b; --amber-soft:#fdf1e0;
   --sky:#1a4080; --sky-soft:#e9eefb;
   --radius:12px; --radius-lg:18px;
+  --shadow:0 1px 2px rgba(18,32,58,.05),0 8px 20px rgba(18,32,58,.05);
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{font-family:'Inter',Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+body{font-family:'Manrope',Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:'Rajdhani',Arial,sans-serif;font-weight:700;letter-spacing:.2px;color:var(--navy-900)}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
@@ -39,7 +40,7 @@ button{cursor:pointer}
 .login .panel{background:#fff;box-shadow:0 24px 60px rgba(0,0,0,.35)}
 
 .muted{color:var(--muted);font-size:14px}
-.panel,.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.panel,.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow)}
 form{display:grid;gap:14px}
 .label{font-size:13px;font-weight:600;display:block;margin-bottom:6px;color:var(--navy-800)}
 input,textarea,select{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 12px;background:#fff;outline:none;color:var(--text)}
@@ -66,13 +67,13 @@ nav{display:flex;flex-direction:column;gap:4px}
 #roleLabel{color:#aebbd6;font-size:12.5px}
 
 .main-col{flex:1;min-width:0;display:flex;flex-direction:column}
-header.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:18px 30px;background:#fff;border-bottom:1px solid var(--border)}
+header.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:18px 30px;background:var(--panel);border-bottom:1px solid var(--border)}
 header.topbar h1{margin:0;font-size:20px}
 .content-wrap{padding:26px 30px 50px;max-width:1180px;width:100%;margin:0 auto}
 
 /* ===== Stats & grids ===== */
 .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
-.stat{padding:16px;border:1px solid var(--border);border-left:4px solid var(--sky);border-radius:var(--radius);background:#fff}
+.stat{padding:16px;border:1px solid var(--border);border-left:4px solid var(--sky);border-radius:var(--radius);background:var(--panel)}
 .stat small{display:block;color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.4px}
 .stat b{display:block;margin-top:7px;font-family:'Rajdhani',sans-serif;font-size:15px}
 
@@ -88,7 +89,7 @@ header.topbar h1{margin:0;font-size:20px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
 
 .card{transition:box-shadow .15s,border-color .15s}
-.card:hover{box-shadow:0 6px 18px rgba(18,32,58,.06)}
+.card:hover{box-shadow:0 10px 26px rgba(18,32,58,.09)}
 
 /* ===== SOP ===== */
 .sop{display:flex;justify-content:space-between;gap:12px;align-items:center}
@@ -264,16 +265,22 @@ window.dastyDb={
 // Link aperto cliccando il logo/nome "DASTYFLYSIM" in alto a sinistra: cambia pure questo indirizzo.
 const BRAND_LINK_URL='https://dastyflysim.it';
 // I caccia (multi-unità + Super Hornet) sono messi in fondo e resi a larghezza piena in griglia (vedi isFighterSim).
+// Solo "4 Caccia" (multi-unità) resta a larghezza piena in griglia: il Super Hornet ora è un simulatore normale.
 const defaultSims=[
 {id:'737',name:'B737 Motion',type:'Boeing 737-800',icon:'✈️',status:'ok',comment:'',check:['Accendere quadro principale','Avviare sistema motion','Avviare avionica','Verificare visual system','Verificare audio e interfono','Eseguire test completo']},
 {id:'320',name:'A320 Statico',type:'Airbus A320',icon:'✈️',status:'ok',comment:'',check:['Accendere alimentazione','Avviare avionica','Configurare visual','Verificare audio','Controllare periferiche','Eseguire test completo']},
 {id:'heli',name:'Elicottero',type:'Helicopter Simulator',icon:'🚁',status:'ok',comment:'',check:['Accendere alimentazione','Avviare cockpit','Avviare visual','Verificare comandi','Verificare audio','Eseguire test completo']},
-{id:'caccia',name:'4 Caccia',type:'F/A-18',icon:'🛩️',status:'ok',comment:'',fighters:[{name:'Caccia 1',status:'ok',comment:''},{name:'Caccia 2',status:'ok',comment:''},{name:'Caccia 3',status:'ok',comment:''},{name:'Caccia 4',status:'ok',comment:''}],check:['Accendere alimentazione','Avviare cockpit','Avviare visual','Verificare HOTAS','Verificare audio','Eseguire test completo']},
-{id:'hornet',name:'Super Hornet',type:'F/A-18',icon:'🛩️',status:'bad',comment:'Manutenzione in corso',check:['Accendere alimentazione','Avviare avionica','Avviare visual','Verificare HOTAS','Verificare feedback','Eseguire test completo']}
+{id:'hornet',name:'Super Hornet',type:'F/A-18',icon:'🛩️',status:'bad',comment:'Manutenzione in corso',check:['Accendere alimentazione','Avviare avionica','Avviare visual','Verificare HOTAS','Verificare feedback','Eseguire test completo']},
+{id:'caccia',name:'4 Caccia',type:'F/A-18',icon:'🛩️',status:'ok',comment:'',fighters:[{name:'Caccia 1',status:'ok',comment:''},{name:'Caccia 2',status:'ok',comment:''},{name:'Caccia 3',status:'ok',comment:''},{name:'Caccia 4',status:'ok',comment:''}],check:['Accendere alimentazione','Avviare cockpit','Avviare visual','Verificare HOTAS','Verificare audio','Eseguire test completo']}
 ];
-function isFighterSim(s){return s.id==='caccia'||s.id==='hornet'}
-const sopPrefix={'737':'SOP737','320':'SOP320','caccia':'SOPCC','hornet':'SOPSH','heli':'SOPHELI'};
-function prefixFor(simName){let s=sims.find(x=>x.name===simName);return s?(sopPrefix[s.id]||('SOP'+s.id.toUpperCase())):'SOP'}
+function isFighterSim(s){return s.id==='caccia'}
+// Ordine di visualizzazione fisso (dashboard e griglia simulatori), indipendente dall'ordine salvato su Firestore.
+const simOrder=['737','320','heli','hornet','caccia'];
+function sortedForDisplay(list){return [...list].sort((a,b)=>{let ia=simOrder.indexOf(a.id),ib=simOrder.indexOf(b.id);if(ia===-1)ia=999;if(ib===-1)ib=999;return ia-ib});}
+const sopPrefix={'737':'SOP737','320':'SOP320','caccia':'SOPCC','hornet':'SOPSH','heli':'SOPHELI','centro':'SOPCTR'};
+// Ambiti disponibili per le SOP: tutti i simulatori più "Centro" (per procedure generali della struttura, non legate a un simulatore).
+function sopScopeList(){return [...sortedForDisplay(sims).map(s=>({id:s.id,name:s.name})),{id:'centro',name:'Centro'}]}
+function prefixFor(simName){let s=sopScopeList().find(x=>x.name===simName);return s?(sopPrefix[s.id]||('SOP'+s.id.toUpperCase())):'SOP'}
 function nextSopCode(simName){let p=prefixFor(simName);let n=sops.filter(x=>x.sim===simName).length+1;return `${p}_${String(n).padStart(3,'0')}`}
 let users=[];
 const $=id=>document.getElementById(id);
@@ -321,9 +328,9 @@ $('usersNav').classList.toggle('hidden',currentUser.role!=='admin');
 $('newSop').classList.toggle('hidden',currentUser.role==='tutor');
 $('editChecklist').classList.toggle('hidden',currentUser.role==='tutor');
 $('stats').innerHTML=sims.map(s=>`<div class="stat"><small>${esc(s.name)}</small><b style="color:${info(s.status)[0]}">${info(s.status)[1]}</b></div>`).join('');
-$('dashSims').innerHTML=sims.map(s=>`<button class="card" style="text-align:left" data-page-open="simulatori"><div style="display:flex;justify-content:space-between"><b>${s.icon} ${esc(s.name)}</b><span style="color:${info(s.status)[0]}">●</span></div><small class="muted">${info(s.status)[1]}${s.id==='caccia'?' · 4 unità indipendenti':''}</small></button>`).join('');
-$('simGrid').innerHTML=[...sims].sort((a,b)=>(isFighterSim(a)?1:0)-(isFighterSim(b)?1:0)).map(simCard).join('');
-if($('sopFilterSim')&&!$('sopFilterSim').dataset.filled){$('sopFilterSim').insertAdjacentHTML('beforeend',sims.map(s=>`<option value="${esc(s.name)}">${esc(s.name)}</option>`).join(''));$('sopFilterSim').dataset.filled='1'}
+$('dashSims').innerHTML=sortedForDisplay(sims).map(s=>`<button class="card" style="text-align:left" data-page-open="simulatori"><div style="display:flex;justify-content:space-between"><b>${s.icon} ${esc(s.name)}</b><span style="color:${info(s.status)[0]}">●</span></div><small class="muted">${info(s.status)[1]}${s.id==='caccia'?' · 4 unità indipendenti':''}</small></button>`).join('');
+$('simGrid').innerHTML=sortedForDisplay(sims).map(simCard).join('');
+if($('sopFilterSim')&&!$('sopFilterSim').dataset.filled){$('sopFilterSim').insertAdjacentHTML('beforeend',sopScopeList().map(s=>`<option value="${esc(s.name)}">${esc(s.name)}</option>`).join(''));$('sopFilterSim').dataset.filled='1'}
 renderSopList();
 $('checkList').innerHTML=sims.map(s=>`<button class="card" style="text-align:left" data-check="${s.id}"><b>${s.icon} ${esc(s.name)}</b><div class="muted" style="margin-top:5px">Checklist di accensione · ${s.check.length} punti</div></button>`).join('');
 if(currentUser.role==='admin')$('usersTable').innerHTML=users.map((u,i)=>`<tr><td><b>${esc(u.code)}</b></td><td>${esc(u.name)}</td><td><span class="badge ${u.role}">${roleLabel(u.role)}</span></td><td>••••••</td><td><button class="btn small editUser" data-i="${i}">Modifica</button> ${u.code!=='dastyadmin'?`<button class="btn small danger deleteUser" data-i="${i}">Elimina</button>`:''}</td></tr>`).join('');
@@ -364,7 +371,7 @@ try{
 $('brandLink').addEventListener('click',()=>window.open(BRAND_LINK_URL,'_blank'));
 $('logout').addEventListener('click',()=>{sessionStorage.removeItem('dasty_session');currentUser=null;$('app').classList.add('hidden');$('login').classList.remove('hidden');$('password').value=''});
 document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>page(b.dataset.page)));
-$('newSop').addEventListener('click',()=>{if(currentUser.role==='tutor')return;$('sopForm').classList.remove('hidden');$('sopSim').innerHTML=sims.map(s=>`<option>${esc(s.name)}</option>`).join('')});
+$('newSop').addEventListener('click',()=>{if(currentUser.role==='tutor')return;$('sopForm').classList.remove('hidden');$('sopSim').innerHTML=sopScopeList().map(s=>`<option>${esc(s.name)}</option>`).join('')});
 $('cancelSop').addEventListener('click',()=>$('sopForm').classList.add('hidden'));
 $('sopFilterSim').addEventListener('change',renderSopList);
 $('sopFilterText').addEventListener('input',renderSopList);
@@ -415,7 +422,7 @@ if(b.classList.contains('viewSop')){$('sopbody'+b.dataset.i).classList.toggle('h
 if(b.classList.contains('editSop')){
   if(currentUser.role==='tutor')return;
   let x=sops[+b.dataset.i];
-  openModal(`<h3>Modifica SOP</h3><div class="muted" style="margin-bottom:8px">${esc(x.code||'')}</div><input id="eSopTitle" value="${esc(x.title)}" placeholder="Titolo SOP"><select id="eSopSim">${sims.map(sm=>`<option ${sm.name===x.sim?'selected':''}>${esc(sm.name)}</option>`).join('')}</select><textarea id="eSopText" rows="6" placeholder="Testo / procedura">${esc(x.text)}</textarea><div class="actions"><button id="saveSopEdit" class="btn primary">Salva</button><button id="closeModal" class="btn">Annulla</button></div>`);
+  openModal(`<h3>Modifica SOP</h3><div class="muted" style="margin-bottom:8px">${esc(x.code||'')}</div><input id="eSopTitle" value="${esc(x.title)}" placeholder="Titolo SOP"><select id="eSopSim">${sopScopeList().map(sm=>`<option ${sm.name===x.sim?'selected':''}>${esc(sm.name)}</option>`).join('')}</select><textarea id="eSopText" rows="6" placeholder="Testo / procedura">${esc(x.text)}</textarea><div class="actions"><button id="saveSopEdit" class="btn primary">Salva</button><button id="closeModal" class="btn">Annulla</button></div>`);
   $('saveSopEdit').onclick=()=>{
     let newSim=$('eSopSim').value;
     if(newSim!==x.sim)x.code=nextSopCode(newSim);
@@ -442,8 +449,8 @@ function openChecklistEditor(s){
 let rows=s.check.map((c,i)=>`<div class="checkitem"><div class="checkrow"><input class="editStep" data-i="${i}" value="${esc(c)}" style="flex:1"><button type="button" class="btn small danger removeStep" data-i="${i}">Rimuovi</button></div></div>`).join('');
 openModal(`<h3>Modifica checklist — ${esc(s.name)}</h3><div id="editRows">${rows}</div><div class="actions"><button id="addStep" class="btn">+ Aggiungi punto</button><button id="saveChecklist" class="btn primary">Salva checklist</button><button id="closeModal" class="btn">Annulla</button></div>`);
 $('addStep').onclick=()=>{let wrap=$('editRows');let i=wrap.querySelectorAll('.checkitem').length;wrap.insertAdjacentHTML('beforeend',`<div class="checkitem"><div class="checkrow"><input class="editStep" data-i="${i}" placeholder="Nuovo punto" style="flex:1"><button type="button" class="btn small danger removeStep">Rimuovi</button></div></div>`)};
-$('editRows').addEventListener('click',e=>{let r=e.target.closest('.removeStep');if(r)r.parentElement.remove()});
-$('saveChecklist').onclick=()=>{let steps=[...$('editRows').querySelectorAll('.checkitem')].map(row=>row.querySelector('.editStep').value.trim()).filter(Boolean);s.check=steps;save();closeModal();render()};
+$('editRows').addEventListener('click',e=>{let r=e.target.closest('.removeStep');if(r)r.closest('.checkitem').remove()});
+$('saveChecklist').onclick=()=>{let steps=[...$('editRows').querySelectorAll('.checkitem')].map(row=>{let inp=row.querySelector('.editStep');return inp?inp.value.trim():''}).filter(Boolean);s.check=steps;save();closeModal();render()};
 }
 function openChecklistDetail(s){
 $('checkDetail').classList.remove('hidden');
