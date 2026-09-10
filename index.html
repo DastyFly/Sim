@@ -347,7 +347,7 @@ $('cancelSop').addEventListener('click',()=>$('sopForm').classList.add('hidden')
 $('sopForm').addEventListener('submit',e=>{e.preventDefault();sops.push({title:$('sopTitle').value.trim(),sim:$('sopSim').value,text:$('sopText').value.trim(),version:'1.0'});$('sopTitle').value='';$('sopText').value='';$('sopForm').classList.add('hidden');save();render()});
 $('editChecklist').addEventListener('click',()=>{if(currentUser.role==='tutor')return;openModal(`<h3>Modifica checklist</h3><p class="muted">Seleziona un simulatore per modificare i punti e le azioni risolutive.</p><select id="editCheckSim">${sims.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}</select><div class="actions"><button id="openEditCheck" class="btn primary">Apri</button><button id="closeModal" class="btn">Annulla</button></div>`)});
 $('newUser').addEventListener('click',()=>{if(currentUser.role!=='admin')return;openModal(`<h3>Nuovo utente</h3><input id="uCode" placeholder="Codice, es. antogi"><input id="uName" placeholder="Nome e cognome"><select id="uRole"><option value="tutor">Tutor</option><option value="supervisor">Supervisor</option><option value="admin">Amministratore</option></select><input id="uPass" placeholder="Password"><div class="actions"><button id="saveUser" class="btn primary">Crea utente</button><button id="closeModal" class="btn">Annulla</button></div>`)});
-$('app').addEventListener('click',e=>{
+document.addEventListener('click',e=>{
 let b=e.target.closest('button');if(!b)return;
 if(b.dataset.pageOpen){page(b.dataset.pageOpen);return}
 if(b.id==='openEditCheck'){let s=sims.find(x=>x.id===$('editCheckSim').value);openChecklistEditor(s);return}
