@@ -227,7 +227,7 @@ header.topbar h1{margin:0;font-size:20px}
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js';
-import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCCwyaQa0W40jQyUfsGkBOISpAvPMLvPYU",
@@ -240,18 +240,19 @@ const firebaseConfig = {
 };
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
-window.dastyDb={db,doc,getDoc,setDoc,updateDoc,deleteDoc,collection,getDocs,query,where};
 
-// Login diretto su Firestore: cerca un documento in "users" con code==codice inserito,
-// e confronta il campo password (testo semplice, gestito dalla pagina admin dell'app).
-window.dastyLogin=async(code,password)=>{
-  const q=query(collection(db,'users'),where('code','==',code));
-  const snap=await getDocs(q);
-  if(snap.empty)throw new Error('not-found');
-  const docSnap=snap.docs[0];
-  const data=docSnap.data();
-  if(String(data.password)!==String(password))throw new Error('wrong-password');
-  return {uid:docSnap.id,...data};
+// TUTTO il gestionale vive in UN SOLO documento: dastyflysim/centro.
+// I campi al suo interno (sims, users, boardNotes, ...) sono array/oggetti
+// letti e riscritti per intero ad ogni modifica.
+const centroRef=doc(db,'dastyflysim','centro');
+window.dastyDb={
+  getCentro:async()=>{
+    const snap=await getDoc(centroRef);
+    return snap.exists()?snap.data():{};
+  },
+  saveCentro:async(patch)=>{
+    await updateDoc(centroRef,patch);
+  }
 };
 </script>
 <script>
@@ -264,17 +265,38 @@ const defaultSims=[
 {id:'heli',name:'Elicottero',type:'Helicopter Simulator',icon:'🚁',status:'ok',comment:'',check:[['Accendere alimentazione','Verificare alimentazione principale.'],['Avviare cockpit','Controllare avvio del cockpit.'],['Avviare visual','Verificare visualizzazione.'],['Verificare comandi','Testare ciclico, collettivo e pedali.'],['Verificare audio','Testare audio e comunicazioni.'],['Eseguire test completo','Confermare che il simulatore sia pronto.']]}
 ];
 let users=[];
-function load(key,def){try{const x=localStorage.getItem(key);return x?JSON.parse(x):structuredClone(def)}catch(e){return structuredClone(def)}}
-let sims=load('dasty_sims',defaultSims);
-let sops=load('dasty_sops',[
-{title:'SOP B737 Motion',sim:'B737 Motion',text:'Procedura standard di accensione, utilizzo e spegnimento del B737 Motion.',version:'1.2'},
-{title:'SOP A320 Statico',sim:'A320 Statico',text:'Procedura standard per avvio e verifica A320.',version:'1.1'},
-{title:'SOP F/A-18',sim:'4 Caccia',text:'Procedure operative per i quattro F/A-18.',version:'1.0'},
-{title:'SOP Super Hornet',sim:'Super Hornet',text:'Procedure operative Super Hornet F/A-18.',version:'1.0'}]);
-let currentUser=null;
 const $=id=>document.getElementById(id);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function save(){try{localStorage.setItem('dasty_sims',JSON.stringify(sims));localStorage.setItem('dasty_sops',JSON.stringify(sops))}catch(e){}}
+
+// I dati reali su Firestore (dastyflysim/centro) salvano i punti della
+// checklist come {step, res} invece delle coppie [step, res] usate dal resto
+// del codice: normalizziamo in entrata e torniamo al formato originale in uscita.
+function normalizeCheck(check){return (check||[]).map(c=>Array.isArray(c)?c:[c.step??c.azione??'',c.res??c.risoluzione??''])}
+function denormalizeCheck(check){return (check||[]).map(c=>({step:c[0],res:c[1]}))}
+function normalizeSim(s){return {...s,check:normalizeCheck(s.check)}}
+function denormalizeSim(s){return {...s,check:denormalizeCheck(s.check)}}
+
+let sims=[],sops=[];
+let centroLoaded=false;
+async function loadCentro(){
+  const data=await window.dastyDb.getCentro();
+  sims=(data.sims&&data.sims.length?data.sims:[]).map(normalizeSim);
+  sops=data.sops||[];
+  users=data.users||[];
+  centroLoaded=true;
+  return data;
+}
+async function save(){
+  try{
+    await window.dastyDb.saveCentro({sims:sims.map(denormalizeSim),sops});
+  }catch(e){console.error(e);alert('Errore nel salvataggio su Firestore.');}
+}
+async function saveUsers(){
+  try{
+    await window.dastyDb.saveCentro({users});
+  }catch(e){console.error(e);alert('Errore nel salvataggio su Firestore.');}
+}
+let currentUser=null;
 function info(st){return st==='ok'?['var(--green)','Funzionante']:st==='warn'?['var(--yellow)','Guasto / Segnalato']:['var(--red)','Non funzionante']}
 function roleLabel(r){return r==='admin'?'Amministratore':r==='supervisor'?'Supervisor':'Tutor'}
 function simCard(s){
@@ -305,9 +327,11 @@ e.preventDefault();
 const code=$('username').value.trim().toLowerCase();
 const p=$('password').value;
 try{
-  const u=await window.dastyLogin(code,p);
+  await loadCentro();
+  const u=users.find(x=>String(x.code).toLowerCase()===code);
+  if(!u||String(u.password)!==String(p))throw new Error('invalid');
   currentUser=u;
-  sessionStorage.setItem('dasty_session',u.uid);
+  sessionStorage.setItem('dasty_session',code);
   $('loginError').classList.add('hidden');
   await afterLogin();
 }catch(err){
@@ -330,13 +354,10 @@ if(b.id==='openEditCheck'){let s=sims.find(x=>x.id===$('editCheckSim').value);op
 if(b.id==='saveUser'){
   let code=$('uCode').value.trim().toLowerCase(),name=$('uName').value.trim(),role=$('uRole').value,pass=$('uPass').value;
   if(!code||!name||!pass||users.some(u=>u.code===code)){alert('Inserisci dati validi e un codice non già utilizzato.');return}
+  users.push({code,name,role,password:pass});
   (async()=>{
-    try{
-      const newRef=window.dastyDb.doc(window.dastyDb.collection(window.dastyDb.db,'users'));
-      await window.dastyDb.setDoc(newRef,{code,name,role,password:pass});
-      users.push({uid:newRef.id,code,name,role,password:pass});
-      closeModal();render();
-    }catch(err){console.error(err);alert('Errore nel salvataggio su Firestore.');}
+    try{await saveUsers();closeModal();render();}
+    catch(err){console.error(err);alert('Errore nel salvataggio su Firestore.');}
   })();
   return;
 }
@@ -344,26 +365,22 @@ if(b.classList.contains('editUser')){
   let u=users[+b.dataset.i];
   openModal(`<h3>Modifica utente</h3><input id="uName" value="${esc(u.name)}" placeholder="Nome e cognome"><select id="uRole"><option value="tutor" ${u.role==='tutor'?'selected':''}>Tutor</option><option value="supervisor" ${u.role==='supervisor'?'selected':''}>Supervisor</option><option value="admin" ${u.role==='admin'?'selected':''}>Amministratore</option></select><input id="uPass" placeholder="Nuova password (lascia vuoto per non cambiarla)"><div class="actions"><button id="updateUser" class="btn primary">Salva</button><button id="closeModal" class="btn">Annulla</button></div>`);
   $('updateUser').onclick=()=>{
-    const name=$('uName').value.trim(),role=$('uRole').value,newPass=$('uPass').value;
-    const patch={name,role};if(newPass)patch.password=newPass;
+    u.name=$('uName').value.trim();u.role=$('uRole').value;
+    if($('uPass').value)u.password=$('uPass').value;
     (async()=>{
-      try{
-        await window.dastyDb.updateDoc(window.dastyDb.doc(window.dastyDb.db,'users',u.uid),patch);
-        Object.assign(u,patch);
-        closeModal();render();
-      }catch(err){console.error(err);alert('Errore nel salvataggio su Firestore.');}
+      try{await saveUsers();closeModal();render();}
+      catch(err){console.error(err);alert('Errore nel salvataggio su Firestore.');}
     })();
   };
   return;
 }
 if(b.classList.contains('deleteUser')){
-  let i=+b.dataset.i,u=users[i];
+  let i=+b.dataset.i;
   if(confirm('Eliminare questo utente?')){
+    users.splice(i,1);
     (async()=>{
-      try{
-        await window.dastyDb.deleteDoc(window.dastyDb.doc(window.dastyDb.db,'users',u.uid));
-        users.splice(i,1);render();
-      }catch(err){console.error(err);alert('Errore nella cancellazione su Firestore.');}
+      try{await saveUsers();render();}
+      catch(err){console.error(err);alert('Errore nella cancellazione su Firestore.');}
     })();
   }
   return;
@@ -390,19 +407,16 @@ async function afterLogin(){
   $('login').classList.add('hidden');$('app').classList.remove('hidden');
   $('roleLabel').textContent=roleLabel(currentUser.role)+' · '+(currentUser.name||currentUser.code);
   $('usersNav').classList.toggle('hidden',currentUser.role!=='admin');
-  if(currentUser.role==='admin'){
-    const qs=await window.dastyDb.getDocs(window.dastyDb.collection(window.dastyDb.db,'users'));
-    users=qs.docs.map(d=>({uid:d.id,...d.data()}));
-  }
   render();
 }
 (async()=>{
-  const savedUid=sessionStorage.getItem('dasty_session');
-  if(!savedUid)return;
+  const savedCode=sessionStorage.getItem('dasty_session');
+  if(!savedCode)return;
   try{
-    const snap=await window.dastyDb.getDoc(window.dastyDb.doc(window.dastyDb.db,'users',savedUid));
-    if(!snap.exists()){sessionStorage.removeItem('dasty_session');return;}
-    currentUser={uid:snap.id,...snap.data()};
+    await loadCentro();
+    const u=users.find(x=>String(x.code).toLowerCase()===savedCode);
+    if(!u){sessionStorage.removeItem('dasty_session');return;}
+    currentUser=u;
     await afterLogin();
   }catch(err){console.error(err);sessionStorage.removeItem('dasty_session');}
 })();
