@@ -5,102 +5,222 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>DastyFlySim — Gestionale</title>
 <style>
-:root{--bg:#f4f7fb;--panel:#fff;--border:#dce3ec;--text:#172033;--muted:#68758a;--accent:#2563eb;--green:#16a34a;--yellow:#d97706;--red:#dc2626}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
-button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
-.wrap{max-width:1120px;margin:auto;padding:28px 20px}.login{max-width:420px;margin:7vh auto}
-.logo{text-align:center;margin-bottom:24px}.logo .plane{font-size:42px}.logo h1{margin:5px 0}.muted{color:var(--muted);font-size:14px}
-.panel,.card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px}
-form{display:grid;gap:14px}.label{font-size:14px;font-weight:600;display:block;margin-bottom:6px}
-input,textarea,select{width:100%;border:1px solid var(--border);border-radius:10px;padding:12px;background:#fff;outline:none}
-input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #2563eb22}
-.btn{border:1px solid var(--border);background:#fff;border-radius:10px;padding:10px 14px}.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn.danger{color:var(--red)}.btn.small{padding:7px 10px;font-size:13px}
-header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}
-nav{display:flex;gap:6px;overflow:auto;border-bottom:1px solid var(--border);margin-bottom:22px}
-.nav{border:0;background:transparent;padding:12px 14px;border-radius:9px 9px 0 0;white-space:nowrap}.nav.active{background:#e8f0ff;color:#1749a5;font-weight:700}
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px}.stat{padding:14px;border:1px solid var(--border);border-radius:12px;background:#fff}.stat small{display:block;color:var(--muted)}.stat b{display:block;margin-top:5px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.simtop{display:flex;justify-content:space-between;gap:12px}.simname{font-weight:700;font-size:17px}.type{font-size:13px;color:var(--muted);margin-top:3px}
-.status{font-weight:700;font-size:13px;white-space:nowrap}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.note{background:#f7f8fa;border-radius:10px;padding:10px;margin-top:12px;font-size:14px}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.sop{display:flex;justify-content:space-between;gap:12px;align-items:center}.sopbody{background:#f7f8fa;padding:12px;border-radius:10px;margin-top:12px;font-size:14px;white-space:pre-wrap}
-.checkitem{border:1px solid var(--border);padding:12px;border-radius:10px;margin:8px 0;background:#fff}.checkrow{display:flex;align-items:center;gap:10px}.checkrow input{width:auto}.resolution{margin:10px 0 0 30px;background:#f7f8fa;border-left:3px solid var(--accent);padding:10px;border-radius:0 10px 10px 0;font-size:13px}
-.badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:700}.badge.tutor{background:#e8f0ff;color:#1749a5}.badge.supervisor{background:#eee7ff;color:#6338a8}.badge.admin{background:#e7f7ec;color:#16733a}
-.caccia-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}.caccia-item{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fafbfd}
-.tablewrap{overflow:auto}.user-table{width:100%;border-collapse:collapse}.user-table th,.user-table td{text-align:left;padding:11px;border-bottom:1px solid var(--border);white-space:nowrap}
-.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}.modalbox{max-width:560px;width:100%;background:#fff;border-radius:16px;padding:20px;max-height:90vh;overflow:auto}
-.notice{padding:12px;border-radius:10px;background:#fff8e8;border:1px solid #f2d28b;font-size:13px}
-@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.grid,.caccia-grid{grid-template-columns:1fr}.wrap{padding:18px 12px}.sop{align-items:flex-start;flex-direction:column}.user-table th,.user-table td{font-size:13px}}
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --navy-900:#08152b; --navy-800:#0d2142; --navy-700:#123061; --navy-600:#1a4080;
+  --bg:#eef1f7; --panel:#ffffff; --border:#dde3ee; --border-soft:#e7ebf3;
+  --text:#12203a; --muted:#66738c; --muted-soft:#8b96ab;
+  --red:#d81324; --red-dark:#b10f1e; --red-soft:#fdeaec;
+  --green:#178a53; --green-soft:#e7f7ee;
+  --amber:#c8790b; --amber-soft:#fdf1e0;
+  --sky:#1a4080; --sky-soft:#e9eefb;
+  --radius:12px; --radius-lg:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Inter',Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Rajdhani',Arial,sans-serif;font-weight:700;letter-spacing:.2px;color:var(--navy-900)}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+::selection{background:var(--red);color:#fff}
+
+/* ===== Login ===== */
+.wrap{max-width:1200px;margin:auto;padding:0}
+.login{min-height:100vh;max-width:none;margin:0;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 15% 20%,var(--navy-700) 0%,var(--navy-900) 55%,#050d1c 100%);
+  padding:24px}
+.login .logincard{max-width:400px;width:100%}
+.logo{text-align:center;margin-bottom:26px}
+.logo .plane{font-size:38px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
+.logo h1{margin:2px 0 4px;color:#fff;font-size:28px;letter-spacing:.5px}
+.logo .muted{color:#aebbd6}
+.login .panel{background:#fff;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+
+.muted{color:var(--muted);font-size:14px}
+.panel,.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+form{display:grid;gap:14px}
+.label{font-size:13px;font-weight:600;display:block;margin-bottom:6px;color:var(--navy-800)}
+input,textarea,select{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 12px;background:#fff;outline:none;color:var(--text)}
+input:focus,textarea:focus,select:focus{border-color:var(--sky);box-shadow:0 0 0 3px #1a408022}
+.btn{border:1.5px solid var(--border);background:#fff;border-radius:10px;padding:10px 14px;font-weight:600;font-size:14px;color:var(--navy-800);transition:filter .15s,transform .1s}
+.btn:hover{filter:brightness(0.97)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--red);color:#fff;border-color:var(--red)}
+.btn.primary:hover{background:var(--red-dark)}
+.btn.danger{color:var(--red);border-color:var(--red-soft)}
+.btn.small{padding:7px 10px;font-size:13px}
+
+/* ===== App shell: sidebar layout ===== */
+#app.layout{display:flex;min-height:100vh;align-items:stretch}
+.sidebar{width:230px;flex:none;background:var(--navy-900);color:#dbe3f2;display:flex;flex-direction:column;padding:22px 14px;gap:22px;position:sticky;top:0;height:100vh}
+.sidebar .brand{display:flex;align-items:center;gap:10px;padding:0 8px}
+.sidebar .brand .plane{font-size:24px}
+.sidebar .brand b{font-family:'Rajdhani',sans-serif;font-size:18px;color:#fff;letter-spacing:.4px}
+nav{display:flex;flex-direction:column;gap:4px}
+.nav{border:0;background:transparent;padding:11px 12px;border-radius:9px;white-space:nowrap;text-align:left;color:#aebbd6;font-weight:600;font-size:14px;display:flex;align-items:center;gap:10px}
+.nav:hover{background:#ffffff12;color:#fff}
+.nav.active{background:var(--red);color:#fff}
+.sidebar-footer{margin-top:auto;padding:0 8px}
+#roleLabel{color:#aebbd6;font-size:12.5px}
+
+.main-col{flex:1;min-width:0;display:flex;flex-direction:column}
+header.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:18px 30px;background:#fff;border-bottom:1px solid var(--border)}
+header.topbar h1{margin:0;font-size:20px}
+.content-wrap{padding:26px 30px 50px;max-width:1180px;width:100%;margin:0 auto}
+
+/* ===== Stats & grids ===== */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
+.stat{padding:16px;border:1px solid var(--border);border-left:4px solid var(--sky);border-radius:var(--radius);background:#fff}
+.stat small{display:block;color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.4px}
+.stat b{display:block;margin-top:7px;font-family:'Rajdhani',sans-serif;font-size:15px}
+
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.simtop{display:flex;justify-content:space-between;gap:12px}
+.simname{font-weight:700;font-size:17px;font-family:'Rajdhani',sans-serif;color:var(--navy-900)}
+.type{font-size:13px;color:var(--muted);margin-top:3px}
+
+.status{font-weight:700;font-size:12.5px;white-space:nowrap;display:inline-flex;align-items:center;padding:5px 10px;border-radius:999px;background:#f3f5f9;box-shadow:inset 0 0 0 1px currentColor}
+.status{opacity:.92}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;background:currentColor!important}
+.note{background:var(--sky-soft);border-radius:10px;padding:10px 12px;margin-top:12px;font-size:13.5px;color:var(--navy-800)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+
+.card{transition:box-shadow .15s,border-color .15s}
+.card:hover{box-shadow:0 6px 18px rgba(18,32,58,.06)}
+
+/* ===== SOP ===== */
+.sop{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.sopbody{background:#f5f7fb;padding:14px;border-radius:10px;margin-top:12px;font-size:14px;white-space:pre-wrap;border-left:3px solid var(--sky)}
+
+/* ===== Checklist ===== */
+.checkitem{border:1px solid var(--border);padding:12px;border-radius:10px;margin:8px 0;background:#fff}
+.checkrow{display:flex;align-items:center;gap:10px}
+.checkrow input{width:auto}
+.resolution{margin:10px 0 0 30px;background:var(--sky-soft);border-left:3px solid var(--sky);padding:10px;border-radius:0 10px 10px 0;font-size:13px}
+
+/* ===== Badges ===== */
+.badge{display:inline-block;border-radius:999px;padding:4px 9px;font-size:11px;font-weight:700;letter-spacing:.2px}
+.badge.tutor{background:var(--sky-soft);color:var(--sky)}
+.badge.supervisor{background:#f1e9fb;color:#6338a8}
+.badge.admin{background:var(--green-soft);color:var(--green)}
+
+.caccia-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.caccia-item{border:1px solid var(--border);border-radius:12px;padding:12px;background:#f8f9fc}
+
+/* ===== Table ===== */
+.tablewrap{overflow:auto}
+.user-table{width:100%;border-collapse:collapse}
+.user-table th{text-align:left;padding:12px;background:#f5f7fb;color:var(--navy-800);font-size:12.5px;text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid var(--border)}
+.user-table td{text-align:left;padding:12px;border-bottom:1px solid var(--border-soft);white-space:nowrap}
+.user-table tr:hover td{background:#fafbfd}
+
+/* ===== Modal ===== */
+.modal{position:fixed;inset:0;background:rgba(8,21,43,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}
+.modalbox{max-width:560px;width:100%;background:#fff;border-radius:var(--radius-lg);padding:22px;max-height:90vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.35)}
+.modalbox h3{margin-top:0}
+
+.notice{padding:12px 14px;border-radius:10px;background:var(--amber-soft);border:1px solid #ecd2a1;font-size:13px;color:#7a4d09}
+
+@media(max-width:900px){
+  #app.layout{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:relative;flex-direction:row;align-items:center;padding:12px 14px}
+  .sidebar .brand{padding:0}
+  nav{flex-direction:row;overflow:auto;flex:1}
+  .sidebar-footer{margin-top:0}
+  .content-wrap{padding:18px 14px 40px}
+  header.topbar{padding:14px 16px}
+}
+@media(max-width:760px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .grid,.caccia-grid{grid-template-columns:1fr}
+  .sop{align-items:flex-start;flex-direction:column}
+  .user-table th,.user-table td{font-size:13px}
+}
 </style>
 </head>
 <body>
 
-<section id="login" class="wrap login">
-  <div class="logo"><div class="plane">✈️</div><h1>DastyFlySim</h1><div class="muted">Gestionale centro simulatori</div></div>
-  <div class="panel">
-    <form id="loginForm">
-      <div><label class="label">Codice utente</label><input id="username" required placeholder="tuo username"></div>
-      <div><label class="label">Password</label><input id="password" type="password" required placeholder="Password"></div>
-      <button class="btn primary">Accedi</button>
-      <div id="loginError" class="muted hidden" style="color:var(--red)">Credenziali non valide.</div>
-    </form>
+<section id="login" class="login">
+  <div class="logincard">
+    <div class="logo"><div class="plane">✈️</div><h1>DASTYFLYSIM</h1><div class="muted">Gestionale centro simulatori</div></div>
+    <div class="panel">
+      <form id="loginForm">
+        <div><label class="label">Codice utente</label><input id="username" required placeholder="tuo username"></div>
+        <div><label class="label">Password</label><input id="password" type="password" required placeholder="Password"></div>
+        <button class="btn primary">Accedi</button>
+        <div id="loginError" class="muted hidden" style="color:var(--red)">Credenziali non valide.</div>
+      </form>
+    </div>
   </div>
 </section>
 
-<section id="app" class="wrap hidden">
-<header>
-  <div><h1 style="margin:0">DastyFlySim</h1><div id="roleLabel" class="muted"></div></div>
-  <button id="logout" class="btn">Esci</button>
-</header>
+<section id="app" class="layout hidden">
+  <aside class="sidebar">
+    <div class="brand"><span class="plane">✈️</span><b>DASTYFLYSIM</b></div>
+    <nav>
+      <button class="nav active" data-page="dashboard">📊 Dashboard</button>
+      <button class="nav" data-page="simulatori">🛩️ Simulatori</button>
+      <button class="nav" data-page="sop">📄 SOP</button>
+      <button class="nav" data-page="checklist">✅ Checklist</button>
+      <button id="usersNav" class="nav hidden" data-page="utenti">🔐 Gestione accessi</button>
+    </nav>
+    <div class="sidebar-footer">
+      <div id="roleLabel" style="margin-bottom:10px"></div>
+      <button id="logout" class="btn" style="width:100%">Esci</button>
+    </div>
+  </aside>
 
-<nav>
-  <button class="nav active" data-page="dashboard">Dashboard</button>
-  <button class="nav" data-page="simulatori">Simulatori</button>
-  <button class="nav" data-page="sop">SOP</button>
-  <button class="nav" data-page="checklist">Checklist</button>
-  <button id="usersNav" class="nav hidden" data-page="utenti">Gestione accessi</button>
-</nav>
+  <div class="main-col">
+    <header class="topbar">
+      <h1 id="pageTitle">Dashboard</h1>
+    </header>
+    <div class="content-wrap">
 
-<section id="dashboardPage">
-  <div id="stats" class="stats"></div>
-  <div class="panel"><h2>Stato simulatori</h2><div id="dashSims" class="grid"></div></div>
-</section>
+      <section id="dashboardPage">
+        <div id="stats" class="stats"></div>
+        <div class="panel"><h2>Stato simulatori</h2><div id="dashSims" class="grid"></div></div>
+      </section>
 
-<section id="simulatoriPage" class="hidden">
-  <h2>Simulatori</h2><p class="muted">Stato operativo e segnalazioni.</p>
-  <div id="simGrid" class="grid"></div>
-</section>
+      <section id="simulatoriPage" class="hidden">
+        <h2>Simulatori</h2><p class="muted">Stato operativo e segnalazioni.</p>
+        <div id="simGrid" class="grid"></div>
+      </section>
 
-<section id="sopPage" class="hidden">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-    <div><h2>SOP</h2><p class="muted">Le SOP sono visibili a tutti; solo i Supervisor possono modificarle.</p></div>
-    <button id="newSop" class="btn primary">+ Nuova SOP</button>
+      <section id="sopPage" class="hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div><h2>SOP</h2><p class="muted">Le SOP sono visibili a tutti; solo i Supervisor possono modificarle.</p></div>
+          <button id="newSop" class="btn primary">+ Nuova SOP</button>
+        </div>
+        <div id="sopList" style="display:grid;gap:10px"></div>
+        <form id="sopForm" class="panel hidden" style="margin-top:15px">
+          <h3 style="margin:0">Nuova SOP</h3><input id="sopTitle" required placeholder="Titolo SOP"><select id="sopSim"></select>
+          <textarea id="sopText" required rows="6" placeholder="Testo / procedura"></textarea>
+          <div class="actions"><button class="btn primary">Salva SOP</button><button type="button" id="cancelSop" class="btn">Annulla</button></div>
+        </form>
+      </section>
+
+      <section id="checklistPage" class="hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div><h2>Checklist di accensione</h2><p class="muted">Ogni punto può avere una propria azione risolutiva.</p></div>
+          <button id="editChecklist" class="btn primary">Modifica checklist</button>
+        </div>
+        <div id="checkList" class="grid"></div>
+        <div id="checkDetail" class="panel hidden" style="margin-top:15px"></div>
+      </section>
+
+      <section id="utentiPage" class="hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div><h2>Gestione accessi</h2><p class="muted">Area riservata al proprietario/amministratore.</p></div>
+          <button id="newUser" class="btn primary">+ Nuovo utente</button>
+        </div>
+        <div class="notice" style="margin:14px 0">Gli account e le password sono gestiti da Firebase Authentication. Da qui puoi visualizzare gli utenti presenti in Firestore; creazione, eliminazione e reset password vanno gestiti dalla console Firebase.</div>
+        <div class="panel tablewrap"><table class="user-table"><thead><tr><th>Codice</th><th>Nome</th><th>Ruolo</th><th>UID</th><th>Azioni</th></tr></thead><tbody id="usersTable"></tbody></table></div>
+      </section>
+
+    </div>
   </div>
-  <div id="sopList" style="display:grid;gap:10px"></div>
-  <form id="sopForm" class="panel hidden" style="margin-top:15px">
-    <h3 style="margin:0">Nuova SOP</h3><input id="sopTitle" required placeholder="Titolo SOP"><select id="sopSim"></select>
-    <textarea id="sopText" required rows="6" placeholder="Testo / procedura"></textarea>
-    <div class="actions"><button class="btn primary">Salva SOP</button><button type="button" id="cancelSop" class="btn">Annulla</button></div>
-  </form>
-</section>
-
-<section id="checklistPage" class="hidden">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-    <div><h2>Checklist di accensione</h2><p class="muted">Ogni punto può avere una propria azione risolutiva.</p></div>
-    <button id="editChecklist" class="btn primary">Modifica checklist</button>
-  </div>
-  <div id="checkList" class="grid"></div>
-  <div id="checkDetail" class="panel hidden" style="margin-top:15px"></div>
-</section>
-
-<section id="utentiPage" class="hidden">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-    <div><h2>Gestione accessi</h2><p class="muted">Area riservata al proprietario/amministratore.</p></div>
-    
-  </div>
-  <div class="notice" style="margin:14px 0">Gli account e le password sono gestiti da Firebase Authentication. Da qui puoi visualizzare gli utenti presenti in Firestore; creazione, eliminazione e reset password vanno gestiti dalla console Firebase.</div>
-  <div class="panel tablewrap"><table class="user-table"><thead><tr><th>Codice</th><th>Nome</th><th>Ruolo</th><th>UID</th><th>Azioni</th></tr></thead><tbody id="usersTable"></tbody></table></div>
-</section>
 </section>
 
 <div id="modal" class="modal hidden"><div id="modalContent" class="modalbox"></div></div>
@@ -169,7 +289,8 @@ $('sopList').innerHTML=sops.map((x,i)=>`<article class="card"><div class="sop"><
 $('checkList').innerHTML=sims.map(s=>`<button class="card" style="text-align:left" data-check="${s.id}"><b>${s.icon} ${esc(s.name)}</b><div class="muted" style="margin-top:5px">Checklist di accensione · ${s.check.length} punti</div></button>`).join('');
 if(currentUser.role==='admin')$('usersTable').innerHTML=users.map((u,i)=>`<tr><td><b>${esc(u.code)}</b></td><td>${esc(u.name)}</td><td><span class="badge ${u.role}">${roleLabel(u.role)}</span></td><td>••••••</td><td><button class="btn small editUser" data-i="${i}">Modifica</button> ${u.code!=='dastyadmin'?`<button class="btn small danger deleteUser" data-i="${i}">Elimina</button>`:''}</td></tr>`).join('');
 }
-function page(p){['dashboard','simulatori','sop','checklist','utenti'].forEach(x=>$(`${x}Page`).classList.toggle('hidden',x!==p));document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===p))}
+const pageTitles={dashboard:'Dashboard',simulatori:'Simulatori',sop:'SOP',checklist:'Checklist di accensione',utenti:'Gestione accessi'};
+function page(p){['dashboard','simulatori','sop','checklist','utenti'].forEach(x=>$(`${x}Page`).classList.toggle('hidden',x!==p));document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if($('pageTitle'))$('pageTitle').textContent=pageTitles[p]||''}
 function openModal(html){$('modalContent').innerHTML=html;$('modal').classList.remove('hidden')}
 function closeModal(){$('modal').classList.add('hidden')}
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();const email=$('username').value.trim();const p=$('password').value;try{await window.dastySignIn(email,p);$('loginError').classList.add('hidden')}catch(err){console.error(err);$('loginError').textContent='Email o password non valide.';$('loginError').classList.remove('hidden')}});
