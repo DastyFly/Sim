@@ -158,7 +158,7 @@ header.topbar h1{margin:0;font-size:20px}
 
 <section id="app" class="layout hidden">
   <aside class="sidebar">
-    <div class="brand"><span class="plane">✈️</span><b>DASTYFLYSIM</b></div>
+    <button id="brandLink" class="brand" style="border:0;background:transparent;cursor:pointer;padding:0" title="Apri sito DastyFlySim"><span class="plane">✈️</span><b>DASTYFLYSIM</b></button>
     <nav>
       <button class="nav active" data-page="dashboard">📊 Dashboard</button>
       <button class="nav" data-page="simulatori">🛩️ Simulatori</button>
@@ -192,6 +192,10 @@ header.topbar h1{margin:0;font-size:20px}
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
           <div><h2>SOP</h2><p class="muted">Le SOP sono visibili a tutti; solo i Supervisor possono modificarle.</p></div>
           <button id="newSop" class="btn primary">+ Nuova SOP</button>
+        </div>
+        <div class="panel" style="display:flex;gap:12px;flex-wrap:wrap;margin:14px 0">
+          <div style="flex:1;min-width:160px"><label class="label">Simulatore</label><select id="sopFilterSim"><option value="">Tutti i simulatori</option></select></div>
+          <div style="flex:2;min-width:220px"><label class="label">Cerca</label><input id="sopFilterText" placeholder="Titolo, codice o parola chiave..."></div>
         </div>
         <div id="sopList" style="display:grid;gap:10px"></div>
         <form id="sopForm" class="panel hidden" style="margin-top:15px">
@@ -257,24 +261,29 @@ window.dastyDb={
 </script>
 <script>
 (()=> {
+// Link aperto cliccando il logo/nome "DASTYFLYSIM" in alto a sinistra: cambia pure questo indirizzo.
+const BRAND_LINK_URL='https://dastyflysim.it';
+// I caccia (multi-unità + Super Hornet) sono messi in fondo e resi a larghezza piena in griglia (vedi isFighterSim).
 const defaultSims=[
-{id:'737',name:'B737 Motion',type:'Boeing 737-800',icon:'✈️',status:'ok',comment:'',check:[['Accendere quadro principale','Verificare alimentazione e interruttore generale.'],['Avviare sistema motion','Controllare che il sistema motion completi il boot senza errori.'],['Avviare avionica','Verificare alimentazione e inizializzazione avionica.'],['Verificare visual system','Controllare immagini, proiettori e allineamento.'],['Verificare audio e interfono','Testare cuffie, altoparlanti e interfono.'],['Eseguire test completo','Confermare che il simulatore sia pronto all’utilizzo.']]},
-{id:'320',name:'A320 Statico',type:'Airbus A320',icon:'✈️',status:'ok',comment:'',check:[['Accendere alimentazione','Verificare alimentazione principale.'],['Avviare avionica','Controllare l’avvio dei sistemi avionici.'],['Configurare visual','Verificare visualizzazione e periferiche.'],['Verificare audio','Eseguire test audio.'],['Controllare periferiche','Verificare sidestick, pedali e comandi.'],['Eseguire test completo','Confermare che il simulatore sia pronto.']]},
-{id:'caccia',name:'4 Caccia',type:'F/A-18',icon:'🛩️',status:'ok',comment:'',fighters:[{name:'Caccia 1',status:'ok',comment:''},{name:'Caccia 2',status:'ok',comment:''},{name:'Caccia 3',status:'ok',comment:''},{name:'Caccia 4',status:'ok',comment:''}],check:[['Accendere alimentazione','Verificare alimentazione generale.'],['Avviare cockpit','Controllare avvio del cockpit.'],['Avviare visual','Verificare visualizzazione.'],['Verificare HOTAS','Testare joystick e manetta.'],['Verificare audio','Testare audio e comunicazioni.'],['Eseguire test completo','Confermare che il simulatore sia pronto.']]},
-{id:'hornet',name:'Super Hornet',type:'F/A-18',icon:'🛩️',status:'bad',comment:'Manutenzione in corso',check:[['Accendere alimentazione','Verificare alimentazione principale.'],['Avviare avionica','Controllare inizializzazione avionica.'],['Avviare visual','Verificare visualizzazione.'],['Verificare HOTAS','Testare joystick e manetta.'],['Verificare feedback','Verificare i sistemi di feedback.'],['Eseguire test completo','Confermare che il simulatore sia pronto.']]},
-{id:'heli',name:'Elicottero',type:'Helicopter Simulator',icon:'🚁',status:'ok',comment:'',check:[['Accendere alimentazione','Verificare alimentazione principale.'],['Avviare cockpit','Controllare avvio del cockpit.'],['Avviare visual','Verificare visualizzazione.'],['Verificare comandi','Testare ciclico, collettivo e pedali.'],['Verificare audio','Testare audio e comunicazioni.'],['Eseguire test completo','Confermare che il simulatore sia pronto.']]}
+{id:'737',name:'B737 Motion',type:'Boeing 737-800',icon:'✈️',status:'ok',comment:'',check:['Accendere quadro principale','Avviare sistema motion','Avviare avionica','Verificare visual system','Verificare audio e interfono','Eseguire test completo']},
+{id:'320',name:'A320 Statico',type:'Airbus A320',icon:'✈️',status:'ok',comment:'',check:['Accendere alimentazione','Avviare avionica','Configurare visual','Verificare audio','Controllare periferiche','Eseguire test completo']},
+{id:'heli',name:'Elicottero',type:'Helicopter Simulator',icon:'🚁',status:'ok',comment:'',check:['Accendere alimentazione','Avviare cockpit','Avviare visual','Verificare comandi','Verificare audio','Eseguire test completo']},
+{id:'caccia',name:'4 Caccia',type:'F/A-18',icon:'🛩️',status:'ok',comment:'',fighters:[{name:'Caccia 1',status:'ok',comment:''},{name:'Caccia 2',status:'ok',comment:''},{name:'Caccia 3',status:'ok',comment:''},{name:'Caccia 4',status:'ok',comment:''}],check:['Accendere alimentazione','Avviare cockpit','Avviare visual','Verificare HOTAS','Verificare audio','Eseguire test completo']},
+{id:'hornet',name:'Super Hornet',type:'F/A-18',icon:'🛩️',status:'bad',comment:'Manutenzione in corso',check:['Accendere alimentazione','Avviare avionica','Avviare visual','Verificare HOTAS','Verificare feedback','Eseguire test completo']}
 ];
+function isFighterSim(s){return s.id==='caccia'||s.id==='hornet'}
+const sopPrefix={'737':'SOP737','320':'SOP320','caccia':'SOPCC','hornet':'SOPSH','heli':'SOPHELI'};
+function prefixFor(simName){let s=sims.find(x=>x.name===simName);return s?(sopPrefix[s.id]||('SOP'+s.id.toUpperCase())):'SOP'}
+function nextSopCode(simName){let p=prefixFor(simName);let n=sops.filter(x=>x.sim===simName).length+1;return `${p}_${String(n).padStart(3,'0')}`}
 let users=[];
 const $=id=>document.getElementById(id);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-// I dati reali su Firestore (dastyflysim/centro) salvano i punti della
-// checklist come {step, res} invece delle coppie [step, res] usate dal resto
-// del codice: normalizziamo in entrata e torniamo al formato originale in uscita.
-function normalizeCheck(check){return (check||[]).map(c=>Array.isArray(c)?c:[c.step??c.azione??'',c.res??c.risoluzione??''])}
-function denormalizeCheck(check){return (check||[]).map(c=>({step:c[0],res:c[1]}))}
+// I punti della checklist sono semplici stringhe (l'azione risolutiva è stata rimossa).
+// Qui normalizziamo eventuali dati vecchi salvati su Firestore come {step,res} o [step,res].
+function normalizeCheck(check){return (check||[]).map(c=>typeof c==='string'?c:(Array.isArray(c)?c[0]:(c.step??c.azione??'')))}
 function normalizeSim(s){return {...s,check:normalizeCheck(s.check)}}
-function denormalizeSim(s){return {...s,check:denormalizeCheck(s.check)}}
+function denormalizeSim(s){return s}
 
 let sims=[],sops=[];
 let centroLoaded=false;
@@ -302,7 +311,7 @@ function roleLabel(r){return r==='admin'?'Amministratore':r==='supervisor'?'Supe
 function simCard(s){
 let [c,l]=info(s.status);
 let fighters=s.id==='caccia'?`<div class="caccia-grid">${s.fighters.map((f,i)=>{let [fc,fl]=info(f.status);return `<div class="caccia-item"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(f.name)}</b><span class="status" style="color:${fc}"><i class="dot" style="background:${fc}"></i>${fl}</span></div>${f.comment?`<div class="note">${esc(f.comment)}</div>`:''}<div class="actions">${currentUser.role==='tutor'?`<button class="btn small reportCaccia" data-id="${s.id}" data-fighter="${i}">Segnala</button>`:`<button class="btn small changeCaccia" data-id="${s.id}" data-fighter="${i}">Modifica stato</button>`}</div></div>`}).join('')}</div>`:'';
-return `<article class="card"><div class="simtop"><div><div style="font-size:25px">${s.icon}</div><div class="simname">${esc(s.name)}</div><div class="type">${esc(s.type)}</div></div><div class="status" style="color:${c}"><i class="dot" style="background:${c}"></i>${l}</div></div>
+return `<article class="card"${isFighterSim(s)?' style="grid-column:1/-1"':''}><div class="simtop"><div><div style="font-size:25px">${s.icon}</div><div class="simname">${esc(s.name)}</div><div class="type">${esc(s.type)}</div></div><div class="status" style="color:${c}"><i class="dot" style="background:${c}"></i>${l}</div></div>
 ${fighters}${s.comment?`<div class="note"><b>Nota:</b> ${esc(s.comment)}</div>`:''}
 <div class="actions"><button class="btn details" data-id="${s.id}">Dettagli</button>${s.id!=='caccia'?(currentUser.role==='tutor'?`<button class="btn report" data-id="${s.id}">Segnala guasto</button>`:`<button class="btn change" data-id="${s.id}">Modifica stato</button>`):''}</div></article>`;
 }
@@ -313,10 +322,22 @@ $('newSop').classList.toggle('hidden',currentUser.role==='tutor');
 $('editChecklist').classList.toggle('hidden',currentUser.role==='tutor');
 $('stats').innerHTML=sims.map(s=>`<div class="stat"><small>${esc(s.name)}</small><b style="color:${info(s.status)[0]}">${info(s.status)[1]}</b></div>`).join('');
 $('dashSims').innerHTML=sims.map(s=>`<button class="card" style="text-align:left" data-page-open="simulatori"><div style="display:flex;justify-content:space-between"><b>${s.icon} ${esc(s.name)}</b><span style="color:${info(s.status)[0]}">●</span></div><small class="muted">${info(s.status)[1]}${s.id==='caccia'?' · 4 unità indipendenti':''}</small></button>`).join('');
-$('simGrid').innerHTML=sims.map(simCard).join('');
-$('sopList').innerHTML=sops.map((x,i)=>`<article class="card"><div class="sop"><div><b>📄 ${esc(x.title)}</b><div class="muted">${esc(x.sim)} · Versione ${esc(x.version)}</div></div><button class="btn viewSop" data-i="${i}">Apri</button></div><div class="sopbody hidden" id="sopbody${i}">${esc(x.text)}</div></article>`).join('');
+$('simGrid').innerHTML=[...sims].sort((a,b)=>(isFighterSim(a)?1:0)-(isFighterSim(b)?1:0)).map(simCard).join('');
+if($('sopFilterSim')&&!$('sopFilterSim').dataset.filled){$('sopFilterSim').insertAdjacentHTML('beforeend',sims.map(s=>`<option value="${esc(s.name)}">${esc(s.name)}</option>`).join(''));$('sopFilterSim').dataset.filled='1'}
+renderSopList();
 $('checkList').innerHTML=sims.map(s=>`<button class="card" style="text-align:left" data-check="${s.id}"><b>${s.icon} ${esc(s.name)}</b><div class="muted" style="margin-top:5px">Checklist di accensione · ${s.check.length} punti</div></button>`).join('');
 if(currentUser.role==='admin')$('usersTable').innerHTML=users.map((u,i)=>`<tr><td><b>${esc(u.code)}</b></td><td>${esc(u.name)}</td><td><span class="badge ${u.role}">${roleLabel(u.role)}</span></td><td>••••••</td><td><button class="btn small editUser" data-i="${i}">Modifica</button> ${u.code!=='dastyadmin'?`<button class="btn small danger deleteUser" data-i="${i}">Elimina</button>`:''}</td></tr>`).join('');
+}
+function renderSopList(){
+if(!$('sopList'))return;
+let simF=$('sopFilterSim')?$('sopFilterSim').value:'';
+let kw=$('sopFilterText')?$('sopFilterText').value.trim().toLowerCase():'';
+let list=sops.map((x,i)=>({...x,_i:i}))
+  .filter(x=>!simF||x.sim===simF)
+  .filter(x=>!kw||(x.title||'').toLowerCase().includes(kw)||(x.code||'').toLowerCase().includes(kw)||(x.text||'').toLowerCase().includes(kw))
+  .sort((a,b)=>(a.sim||'').localeCompare(b.sim||'')||(a.code||'').localeCompare(b.code||''));
+let canEdit=currentUser.role!=='tutor';
+$('sopList').innerHTML=list.length?list.map(x=>`<article class="card"><div class="sop"><div><b>📄 ${x.code?`<span class="muted">${esc(x.code)}</span> · `:''}${esc(x.title)}</b><div class="muted">${esc(x.sim)} · Versione ${esc(x.version)}</div></div><div class="actions" style="margin-top:0"><button class="btn small viewSop" data-i="${x._i}">Apri</button>${canEdit?`<button class="btn small editSop" data-i="${x._i}">Modifica</button><button class="btn small danger deleteSop" data-i="${x._i}">Elimina</button>`:''}</div></div><div class="sopbody hidden" id="sopbody${x._i}">${esc(x.text)}</div></article>`).join(''):'<p class="muted">Nessuna SOP trovata.</p>';
 }
 const pageTitles={dashboard:'Dashboard',simulatori:'Simulatori',sop:'SOP',checklist:'Checklist di accensione',utenti:'Gestione accessi'};
 function page(p){['dashboard','simulatori','sop','checklist','utenti'].forEach(x=>$(`${x}Page`).classList.toggle('hidden',x!==p));document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if($('pageTitle'))$('pageTitle').textContent=pageTitles[p]||''}
@@ -340,11 +361,14 @@ try{
   $('loginError').classList.remove('hidden');
 }
 });
+$('brandLink').addEventListener('click',()=>window.open(BRAND_LINK_URL,'_blank'));
 $('logout').addEventListener('click',()=>{sessionStorage.removeItem('dasty_session');currentUser=null;$('app').classList.add('hidden');$('login').classList.remove('hidden');$('password').value=''});
 document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>page(b.dataset.page)));
 $('newSop').addEventListener('click',()=>{if(currentUser.role==='tutor')return;$('sopForm').classList.remove('hidden');$('sopSim').innerHTML=sims.map(s=>`<option>${esc(s.name)}</option>`).join('')});
 $('cancelSop').addEventListener('click',()=>$('sopForm').classList.add('hidden'));
-$('sopForm').addEventListener('submit',e=>{e.preventDefault();sops.push({title:$('sopTitle').value.trim(),sim:$('sopSim').value,text:$('sopText').value.trim(),version:'1.0'});$('sopTitle').value='';$('sopText').value='';$('sopForm').classList.add('hidden');save();render()});
+$('sopFilterSim').addEventListener('change',renderSopList);
+$('sopFilterText').addEventListener('input',renderSopList);
+$('sopForm').addEventListener('submit',e=>{e.preventDefault();let sim=$('sopSim').value;sops.push({code:nextSopCode(sim),title:$('sopTitle').value.trim(),sim,text:$('sopText').value.trim(),version:'1.0'});$('sopTitle').value='';$('sopText').value='';$('sopForm').classList.add('hidden');save();render()});
 $('editChecklist').addEventListener('click',()=>{if(currentUser.role==='tutor')return;openModal(`<h3>Modifica checklist</h3><p class="muted">Seleziona un simulatore per modificare i punti e le azioni risolutive.</p><select id="editCheckSim">${sims.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}</select><div class="actions"><button id="openEditCheck" class="btn primary">Apri</button><button id="closeModal" class="btn">Annulla</button></div>`)});
 $('newUser').addEventListener('click',()=>{if(currentUser.role!=='admin')return;openModal(`<h3>Nuovo utente</h3><input id="uCode" placeholder="Codice, es. antogi"><input id="uName" placeholder="Nome e cognome"><select id="uRole"><option value="tutor">Tutor</option><option value="supervisor">Supervisor</option><option value="admin">Amministratore</option></select><input id="uPass" placeholder="Password"><div class="actions"><button id="saveUser" class="btn primary">Crea utente</button><button id="closeModal" class="btn">Annulla</button></div>`)});
 document.addEventListener('click',e=>{
@@ -385,8 +409,26 @@ if(b.classList.contains('deleteUser')){
   }
   return;
 }
-if(b.classList.contains('viewSop')){$('sopbody'+b.dataset.i).classList.toggle('hidden');return}
+if(b.dataset.check){let s=sims.find(x=>x.id===b.dataset.check);if(s)openChecklistDetail(s);return}
 if(b.id==='closeCheck'){$('checkDetail').classList.add('hidden');return}
+if(b.classList.contains('viewSop')){$('sopbody'+b.dataset.i).classList.toggle('hidden');return}
+if(b.classList.contains('editSop')){
+  if(currentUser.role==='tutor')return;
+  let x=sops[+b.dataset.i];
+  openModal(`<h3>Modifica SOP</h3><div class="muted" style="margin-bottom:8px">${esc(x.code||'')}</div><input id="eSopTitle" value="${esc(x.title)}" placeholder="Titolo SOP"><select id="eSopSim">${sims.map(sm=>`<option ${sm.name===x.sim?'selected':''}>${esc(sm.name)}</option>`).join('')}</select><textarea id="eSopText" rows="6" placeholder="Testo / procedura">${esc(x.text)}</textarea><div class="actions"><button id="saveSopEdit" class="btn primary">Salva</button><button id="closeModal" class="btn">Annulla</button></div>`);
+  $('saveSopEdit').onclick=()=>{
+    let newSim=$('eSopSim').value;
+    if(newSim!==x.sim)x.code=nextSopCode(newSim);
+    x.sim=newSim;x.title=$('eSopTitle').value.trim();x.text=$('eSopText').value.trim();
+    save();closeModal();render();
+  };
+  return;
+}
+if(b.classList.contains('deleteSop')){
+  if(currentUser.role==='tutor')return;
+  if(confirm('Eliminare questa SOP?')){sops.splice(+b.dataset.i,1);save();render();}
+  return;
+}
 let s=sims.find(x=>x.id===b.dataset.id),fi=b.dataset.fighter;
 if(b.classList.contains('reportCaccia')||b.classList.contains('changeCaccia')){let f=s.fighters[+fi],supervisor=currentUser.role!=='tutor';openModal(`<h3>${supervisor?'Modifica stato':'Segnala guasto'} — ${esc(f.name)}</h3>${supervisor?`<select id="newStatus"><option value="ok">🟢 Funzionante</option><option value="warn">🟡 Guasto / Segnalato</option><option value="bad">🔴 Non funzionante</option></select>`:`<div class="note">Come Tutor puoi impostare solamente il giallo e descrivere il problema.</div>`}<textarea id="newComment" rows="4" style="margin-top:12px" placeholder="Motivo / commento">${esc(f.comment)}</textarea><div class="actions"><button id="saveState" class="btn primary">Salva</button><button id="closeModal" class="btn">Annulla</button></div>`);$('saveState').onclick=()=>{f.status=supervisor?$('newStatus').value:'warn';f.comment=$('newComment').value.trim();s.status=fightersOverall(s);s.comment='';save();closeModal();render()};return}
 if(!s)return;
@@ -394,14 +436,19 @@ if(b.classList.contains('details')){let extra=s.id==='caccia'?`<div class="cacci
 if(b.classList.contains('report')||b.classList.contains('change')){let supervisor=currentUser.role!=='tutor';openModal(`<h3>${supervisor?'Modifica stato':'Segnala guasto'} — ${esc(s.name)}</h3>${supervisor?`<select id="newStatus"><option value="ok">🟢 Funzionante</option><option value="warn">🟡 Guasto / Segnalato</option><option value="bad">🔴 Non funzionante</option></select>`:`<div class="note">Come Tutor puoi impostare solamente lo stato giallo e descrivere il problema.</div>`}<textarea id="newComment" rows="4" style="margin-top:12px" placeholder="Motivo / commento">${esc(s.comment)}</textarea><div class="actions"><button id="saveState" class="btn primary">Salva</button><button id="closeModal" class="btn">Annulla</button></div>`);$('saveState').onclick=()=>{s.status=supervisor?$('newStatus').value:'warn';s.comment=$('newComment').value.trim();save();closeModal();render()};return}
 });
 $('modal').addEventListener('click',e=>{if(e.target===$('modal')||e.target.id==='closeModal')closeModal()});
-$('checkDetail').addEventListener('change',e=>{if(e.target.type==='checkbox'){let all=$('checkDetail input[type=checkbox]'),done=[...all].filter(x=>x.checked).length;let p=$('progress');if(p)p.textContent=`${done} / ${all.length} completati`}});
+$('checkDetail').addEventListener('change',e=>{if(e.target.type==='checkbox'){let all=$('checkDetail').querySelectorAll('input[type=checkbox]'),done=[...all].filter(x=>x.checked).length;let p=$('progress');if(p)p.textContent=`${done} / ${all.length} completati`}});
 function fightersOverall(s){let bad=s.fighters.some(f=>f.status==='bad'),warn=s.fighters.some(f=>f.status==='warn');return bad?'bad':warn?'warn':'ok'}
 function openChecklistEditor(s){
-let rows=s.check.map((c,i)=>`<div class="checkitem"><input class="editStep" data-i="${i}" value="${esc(c[0])}"><textarea class="editResolution" data-i="${i}" rows="2" placeholder="Azione risolutiva">${esc(c[1])}</textarea><button type="button" class="btn small danger removeStep" data-i="${i}">Rimuovi</button></div>`).join('');
+let rows=s.check.map((c,i)=>`<div class="checkitem"><div class="checkrow"><input class="editStep" data-i="${i}" value="${esc(c)}" style="flex:1"><button type="button" class="btn small danger removeStep" data-i="${i}">Rimuovi</button></div></div>`).join('');
 openModal(`<h3>Modifica checklist — ${esc(s.name)}</h3><div id="editRows">${rows}</div><div class="actions"><button id="addStep" class="btn">+ Aggiungi punto</button><button id="saveChecklist" class="btn primary">Salva checklist</button><button id="closeModal" class="btn">Annulla</button></div>`);
-$('addStep').onclick=()=>{let wrap=$('editRows');let i=wrap.querySelectorAll('.checkitem').length;wrap.insertAdjacentHTML('beforeend',`<div class="checkitem"><input class="editStep" data-i="${i}" placeholder="Nuovo punto"><textarea class="editResolution" data-i="${i}" rows="2" placeholder="Azione risolutiva"></textarea><button type="button" class="btn small danger removeStep">Rimuovi</button></div>`)};
+$('addStep').onclick=()=>{let wrap=$('editRows');let i=wrap.querySelectorAll('.checkitem').length;wrap.insertAdjacentHTML('beforeend',`<div class="checkitem"><div class="checkrow"><input class="editStep" data-i="${i}" placeholder="Nuovo punto" style="flex:1"><button type="button" class="btn small danger removeStep">Rimuovi</button></div></div>`)};
 $('editRows').addEventListener('click',e=>{let r=e.target.closest('.removeStep');if(r)r.parentElement.remove()});
-$('saveChecklist').onclick=()=>{let steps=[...$('editRows').querySelectorAll('.checkitem')].map(row=>{let a=row.querySelector('.editStep').value.trim(),res=row.querySelector('.editResolution').value.trim();return [a,res]}).filter(x=>x[0]);s.check=steps;save();closeModal();render()};
+$('saveChecklist').onclick=()=>{let steps=[...$('editRows').querySelectorAll('.checkitem')].map(row=>row.querySelector('.editStep').value.trim()).filter(Boolean);s.check=steps;save();closeModal();render()};
+}
+function openChecklistDetail(s){
+$('checkDetail').classList.remove('hidden');
+$('checkDetail').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h3 style="margin:0">${s.icon} ${esc(s.name)} — Checklist accensione</h3><button id="closeCheck" class="btn small">Chiudi</button></div><div id="progress" class="muted" style="margin:6px 0 12px">0 / ${s.check.length} completati</div>${s.check.map((c,i)=>`<div class="checkitem"><label class="checkrow"><input type="checkbox" data-check-i="${i}"><span>${esc(c)}</span></label></div>`).join('')}`;
+$('checkDetail').scrollIntoView({behavior:'smooth',block:'start'});
 }
 async function afterLogin(){
   $('login').classList.add('hidden');$('app').classList.remove('hidden');
