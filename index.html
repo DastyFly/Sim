@@ -88,6 +88,21 @@ header.topbar h1{margin:0;font-size:20px}
 .note{background:var(--sky-soft);border-radius:10px;padding:10px 12px;margin-top:12px;font-size:13.5px;color:var(--navy-800)}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
 
+/* ===== Icone minimal (line-icon, stroke=currentColor) ===== */
+.icon{display:inline-flex;align-items:center;justify-content:center;flex:none}
+.icon svg{width:100%;height:100%}
+.sidebar .brand .icon{color:#fff}
+.nav .icon{color:currentColor;width:18px;height:18px}
+.simname-row{display:flex;align-items:center;gap:10px}
+.simname-row .icon{width:26px;height:26px;color:var(--sky)}
+
+/* ===== Dashboard: lista compatta, diversa dalla pagina Simulatori ===== */
+.rowlist{display:flex;flex-direction:column;gap:8px}
+.rowitem{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid var(--border);border-radius:10px;background:var(--panel);text-align:left;width:100%;box-shadow:var(--shadow)}
+.rowitem:hover{box-shadow:0 10px 26px rgba(18,32,58,.09)}
+.rowicon{width:22px;height:22px;color:var(--sky)}
+.rowname{flex:1;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:15.5px;color:var(--navy-900)}
+
 .card{transition:box-shadow .15s,border-color .15s}
 .card:hover{box-shadow:0 10px 26px rgba(18,32,58,.09)}
 
@@ -126,11 +141,15 @@ header.topbar h1{margin:0;font-size:20px}
 
 @media(max-width:900px){
   #app.layout{flex-direction:column}
-  .sidebar{width:100%;height:auto;position:relative;flex-direction:row;align-items:center;padding:12px 14px}
+  .sidebar{width:100%;height:auto;position:sticky;top:0;z-index:6;flex-direction:row;align-items:center;justify-content:space-between;padding:12px 14px;gap:10px}
   .sidebar .brand{padding:0}
-  nav{flex-direction:row;overflow:auto;flex:1}
-  .sidebar-footer{margin-top:0}
-  .content-wrap{padding:18px 14px 40px}
+  .sidebar-footer{margin-top:0;display:flex;align-items:center;gap:10px}
+  .sidebar-footer #roleLabel{display:none}
+  .sidebar-footer .btn{width:auto;padding:8px 10px}
+  nav{position:fixed;left:0;right:0;bottom:0;flex-direction:row;justify-content:space-around;align-items:stretch;background:var(--navy-900);padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:8;gap:0;box-shadow:0 -6px 16px rgba(0,0,0,.25)}
+  .nav{flex-direction:column;gap:3px;padding:7px 4px;border-radius:8px;font-size:10.5px;flex:1;align-items:center;white-space:normal;text-align:center}
+  .nav .icon{width:20px;height:20px}
+  .content-wrap{padding:16px 14px calc(78px + env(safe-area-inset-bottom))}
   header.topbar{padding:14px 16px}
 }
 @media(max-width:760px){
@@ -138,6 +157,7 @@ header.topbar h1{margin:0;font-size:20px}
   .grid,.caccia-grid{grid-template-columns:1fr}
   .sop{align-items:flex-start;flex-direction:column}
   .user-table th,.user-table td{font-size:13px}
+  .sop-filters,.panel[style*="flex-wrap"]{flex-direction:column}
 }
 </style>
 </head>
@@ -145,7 +165,7 @@ header.topbar h1{margin:0;font-size:20px}
 
 <section id="login" class="login">
   <div class="logincard">
-    <div class="logo"><div class="plane">✈️</div><h1>DASTYFLYSIM</h1><div class="muted">Gestionale centro simulatori</div></div>
+    <div class="logo"><div class="icon" data-ic="plane" style="width:44px;height:44px;color:#fff;margin:0 auto 8px"></div><h1>DASTYFLYSIM</h1><div class="muted">Gestionale centro simulatori</div></div>
     <div class="panel">
       <form id="loginForm">
         <div><label class="label">Codice utente</label><input id="username" required placeholder="tuo username"></div>
@@ -159,17 +179,17 @@ header.topbar h1{margin:0;font-size:20px}
 
 <section id="app" class="layout hidden">
   <aside class="sidebar">
-    <button id="brandLink" class="brand" style="border:0;background:transparent;cursor:pointer;padding:0" title="Apri sito DastyFlySim"><span class="plane">✈️</span><b>DASTYFLYSIM</b></button>
+    <button id="brandLink" class="brand" style="border:0;background:transparent;cursor:pointer;padding:0" title="Apri sito DastyFlySim"><span class="icon" data-ic="plane" style="width:24px;height:24px"></span><b>DASTYFLYSIM</b></button>
     <nav>
-      <button class="nav active" data-page="dashboard">📊 Dashboard</button>
-      <button class="nav" data-page="simulatori">🛩️ Simulatori</button>
-      <button class="nav" data-page="sop">📄 SOP</button>
-      <button class="nav" data-page="checklist">✅ Checklist</button>
-      <button id="usersNav" class="nav hidden" data-page="utenti">🔐 Gestione accessi</button>
+      <button class="nav active" data-page="dashboard"><span class="icon" data-ic="dashboard"></span><span>Dashboard</span></button>
+      <button class="nav" data-page="simulatori"><span class="icon" data-ic="plane"></span><span>Simulatori</span></button>
+      <button class="nav" data-page="sop"><span class="icon" data-ic="sop"></span><span>SOP</span></button>
+      <button class="nav" data-page="checklist"><span class="icon" data-ic="check"></span><span>Checklist</span></button>
+      <button id="usersNav" class="nav hidden" data-page="utenti"><span class="icon" data-ic="lock"></span><span>Accessi</span></button>
     </nav>
     <div class="sidebar-footer">
       <div id="roleLabel" style="margin-bottom:10px"></div>
-      <button id="logout" class="btn" style="width:100%">Esci</button>
+      <button id="logout" class="btn" style="width:100%"><span class="icon" data-ic="logout" style="width:16px;height:16px;margin-right:6px;vertical-align:-3px"></span>Esci</button>
     </div>
   </aside>
 
@@ -181,7 +201,7 @@ header.topbar h1{margin:0;font-size:20px}
 
       <section id="dashboardPage">
         <div id="stats" class="stats"></div>
-        <div class="panel"><h2>Stato simulatori</h2><div id="dashSims" class="grid"></div></div>
+        <div class="panel"><h2>Stato simulatori</h2><p class="muted" style="margin-top:-6px">Vista rapida — apri "Simulatori" per dettagli e azioni.</p><div id="dashSims" class="rowlist"></div></div>
       </section>
 
       <section id="simulatoriPage" class="hidden">
@@ -208,7 +228,7 @@ header.topbar h1{margin:0;font-size:20px}
 
       <section id="checklistPage" class="hidden">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-          <div><h2>Checklist di accensione</h2><p class="muted">Ogni punto può avere una propria azione risolutiva.</p></div>
+          <div><h2>Checklist di accensione</h2><p class="muted">Apri la checklist di un simulatore per spuntare i punti da completare.</p></div>
           <button id="editChecklist" class="btn primary">Modifica checklist</button>
         </div>
         <div id="checkList" class="grid"></div>
@@ -220,7 +240,7 @@ header.topbar h1{margin:0;font-size:20px}
           <div><h2>Gestione accessi</h2><p class="muted">Area riservata al proprietario/amministratore.</p></div>
           <button id="newUser" class="btn primary">+ Nuovo utente</button>
         </div>
-        <div class="notice" style="margin:14px 0">Gli account e le password sono gestiti da Firebase Authentication. Da qui puoi visualizzare gli utenti presenti in Firestore; creazione, eliminazione e reset password vanno gestiti dalla console Firebase.</div>
+        <div class="notice" style="margin:14px 0">Le password non sono più salvate in chiaro (sono cifrate con SHA-256). Attenzione però: questa è un'app statica senza server — chiunque conosca l'indirizzo del progetto Firebase può comunque leggere/scrivere il database direttamente, non solo tramite questa pagina. Per un isolamento vero tra account serve Firebase Authentication con regole legate all'utente autenticato: dimmi se vuoi che lo implementiamo.</div>
         <div class="panel tablewrap"><table class="user-table"><thead><tr><th>Codice</th><th>Nome</th><th>Ruolo</th><th>UID</th><th>Azioni</th></tr></thead><tbody id="usersTable"></tbody></table></div>
       </section>
 
@@ -262,6 +282,23 @@ window.dastyDb={
 </script>
 <script>
 (()=> {
+// Icone minimal a linea singola (stroke=currentColor), usate al posto delle emoji.
+const ICONS={
+plane:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4 9l16 3M4 15l16-3M9 20l3-2 3 2"/></svg>',
+heli:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h20M12 6v4M7 10h10a3 3 0 013 3v1a5 5 0 01-5 5H9a5 5 0 01-5-5v-1a3 3 0 013-3z"/><path d="M9 19l-2 2m8-2l2 2"/></svg>',
+squad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v7M6 7l12 2M6 11l12-2M9 15l3-1.5 3 1.5"/><path d="M4 19l3-2M20 19l-3-2"/></svg>',
+dashboard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/></svg>',
+sop:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2h7l4 4v16H7z"/><path d="M14 2v4h4M9 12h6M9 16h6M9 8h3"/></svg>',
+check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3h6v2H9z"/><path d="M8 12l2.5 2.5L16 9"/></svg>',
+lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>',
+logout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>'
+};
+function ic(name,size){return `<span class="icon" style="width:${size||18}px;height:${size||18}px">${ICONS[name]||''}</span>`}
+function simIconKey(s){return s.id==='heli'?'heli':s.id==='caccia'?'squad':'plane'}
+document.querySelectorAll('[data-ic]').forEach(el=>{el.innerHTML=ICONS[el.dataset.ic]||''});
+// Hash delle password (SHA-256): evita che restino leggibili in chiaro nel database.
+async function sha256(text){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('')}
+function looksHashed(v){return typeof v==='string'&&/^[0-9a-f]{64}$/i.test(v)}
 // Link aperto cliccando il logo/nome "DASTYFLYSIM" in alto a sinistra: cambia pure questo indirizzo.
 const BRAND_LINK_URL='https://dastyflysim.it';
 // I caccia (multi-unità + Super Hornet) sono messi in fondo e resi a larghezza piena in griglia (vedi isFighterSim).
@@ -318,7 +355,7 @@ function roleLabel(r){return r==='admin'?'Amministratore':r==='supervisor'?'Supe
 function simCard(s){
 let [c,l]=info(s.status);
 let fighters=s.id==='caccia'?`<div class="caccia-grid">${s.fighters.map((f,i)=>{let [fc,fl]=info(f.status);return `<div class="caccia-item"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(f.name)}</b><span class="status" style="color:${fc}"><i class="dot" style="background:${fc}"></i>${fl}</span></div>${f.comment?`<div class="note">${esc(f.comment)}</div>`:''}<div class="actions">${currentUser.role==='tutor'?`<button class="btn small reportCaccia" data-id="${s.id}" data-fighter="${i}">Segnala</button>`:`<button class="btn small changeCaccia" data-id="${s.id}" data-fighter="${i}">Modifica stato</button>`}</div></div>`}).join('')}</div>`:'';
-return `<article class="card"${isFighterSim(s)?' style="grid-column:1/-1"':''}><div class="simtop"><div><div style="font-size:25px">${s.icon}</div><div class="simname">${esc(s.name)}</div><div class="type">${esc(s.type)}</div></div><div class="status" style="color:${c}"><i class="dot" style="background:${c}"></i>${l}</div></div>
+return `<article class="card"${isFighterSim(s)?' style="grid-column:1/-1"':''}><div class="simtop"><div><div class="simname-row">${ic(simIconKey(s),25)}<div class="simname">${esc(s.name)}</div></div><div class="type">${esc(s.type)}</div></div><div class="status" style="color:${c}"><i class="dot" style="background:${c}"></i>${l}</div></div>
 ${fighters}${s.comment?`<div class="note"><b>Nota:</b> ${esc(s.comment)}</div>`:''}
 <div class="actions"><button class="btn details" data-id="${s.id}">Dettagli</button>${s.id!=='caccia'?(currentUser.role==='tutor'?`<button class="btn report" data-id="${s.id}">Segnala guasto</button>`:`<button class="btn change" data-id="${s.id}">Modifica stato</button>`):''}</div></article>`;
 }
@@ -328,11 +365,11 @@ $('usersNav').classList.toggle('hidden',currentUser.role!=='admin');
 $('newSop').classList.toggle('hidden',currentUser.role==='tutor');
 $('editChecklist').classList.toggle('hidden',currentUser.role==='tutor');
 $('stats').innerHTML=sims.map(s=>`<div class="stat"><small>${esc(s.name)}</small><b style="color:${info(s.status)[0]}">${info(s.status)[1]}</b></div>`).join('');
-$('dashSims').innerHTML=sortedForDisplay(sims).map(s=>`<button class="card" style="text-align:left" data-page-open="simulatori"><div style="display:flex;justify-content:space-between"><b>${s.icon} ${esc(s.name)}</b><span style="color:${info(s.status)[0]}">●</span></div><small class="muted">${info(s.status)[1]}${s.id==='caccia'?' · 4 unità indipendenti':''}</small></button>`).join('');
+$('dashSims').innerHTML=sortedForDisplay(sims).map(s=>{let [c,l]=info(s.status);return `<button class="rowitem" data-page-open="simulatori"><span class="rowicon">${ic(simIconKey(s),22)}</span><span class="rowname">${esc(s.name)}</span><span class="status" style="color:${c}"><i class="dot" style="background:${c}"></i>${l}</span></button>`}).join('');
 $('simGrid').innerHTML=sortedForDisplay(sims).map(simCard).join('');
 if($('sopFilterSim')&&!$('sopFilterSim').dataset.filled){$('sopFilterSim').insertAdjacentHTML('beforeend',sopScopeList().map(s=>`<option value="${esc(s.name)}">${esc(s.name)}</option>`).join(''));$('sopFilterSim').dataset.filled='1'}
 renderSopList();
-$('checkList').innerHTML=sims.map(s=>`<button class="card" style="text-align:left" data-check="${s.id}"><b>${s.icon} ${esc(s.name)}</b><div class="muted" style="margin-top:5px">Checklist di accensione · ${s.check.length} punti</div></button>`).join('');
+$('checkList').innerHTML=sims.map(s=>`<button class="card" style="text-align:left" data-check="${s.id}"><div class="simname-row">${ic(simIconKey(s),22)}<b>${esc(s.name)}</b></div><div class="muted" style="margin-top:5px">Checklist di accensione · ${s.check.length} punti</div></button>`).join('');
 if(currentUser.role==='admin')$('usersTable').innerHTML=users.map((u,i)=>`<tr><td><b>${esc(u.code)}</b></td><td>${esc(u.name)}</td><td><span class="badge ${u.role}">${roleLabel(u.role)}</span></td><td>••••••</td><td><button class="btn small editUser" data-i="${i}">Modifica</button> ${u.code!=='dastyadmin'?`<button class="btn small danger deleteUser" data-i="${i}">Elimina</button>`:''}</td></tr>`).join('');
 }
 function renderSopList(){
@@ -344,7 +381,7 @@ let list=sops.map((x,i)=>({...x,_i:i}))
   .filter(x=>!kw||(x.title||'').toLowerCase().includes(kw)||(x.code||'').toLowerCase().includes(kw)||(x.text||'').toLowerCase().includes(kw))
   .sort((a,b)=>(a.sim||'').localeCompare(b.sim||'')||(a.code||'').localeCompare(b.code||''));
 let canEdit=currentUser.role!=='tutor';
-$('sopList').innerHTML=list.length?list.map(x=>`<article class="card"><div class="sop"><div><b>📄 ${x.code?`<span class="muted">${esc(x.code)}</span> · `:''}${esc(x.title)}</b><div class="muted">${esc(x.sim)} · Versione ${esc(x.version)}</div></div><div class="actions" style="margin-top:0"><button class="btn small viewSop" data-i="${x._i}">Apri</button>${canEdit?`<button class="btn small editSop" data-i="${x._i}">Modifica</button><button class="btn small danger deleteSop" data-i="${x._i}">Elimina</button>`:''}</div></div><div class="sopbody hidden" id="sopbody${x._i}">${esc(x.text)}</div></article>`).join(''):'<p class="muted">Nessuna SOP trovata.</p>';
+$('sopList').innerHTML=list.length?list.map(x=>`<article class="card"><div class="sop"><div><div class="simname-row">${ic('sop',18)}<b>${x.code?`<span class="muted">${esc(x.code)}</span> · `:''}${esc(x.title)}</b></div><div class="muted">${esc(x.sim)} · Versione ${esc(x.version)}</div></div><div class="actions" style="margin-top:0"><button class="btn small viewSop" data-i="${x._i}">Apri</button>${canEdit?`<button class="btn small editSop" data-i="${x._i}">Modifica</button><button class="btn small danger deleteSop" data-i="${x._i}">Elimina</button>`:''}</div></div><div class="sopbody hidden" id="sopbody${x._i}">${esc(x.text)}</div></article>`).join(''):'<p class="muted">Nessuna SOP trovata.</p>';
 }
 const pageTitles={dashboard:'Dashboard',simulatori:'Simulatori',sop:'SOP',checklist:'Checklist di accensione',utenti:'Gestione accessi'};
 function page(p){['dashboard','simulatori','sop','checklist','utenti'].forEach(x=>$(`${x}Page`).classList.toggle('hidden',x!==p));document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if($('pageTitle'))$('pageTitle').textContent=pageTitles[p]||''}
@@ -357,7 +394,15 @@ const p=$('password').value;
 try{
   await loadCentro();
   const u=users.find(x=>String(x.code).toLowerCase()===code);
-  if(!u||String(u.password)!==String(p))throw new Error('invalid');
+  if(!u)throw new Error('invalid');
+  let ok;
+  if(looksHashed(u.password)){
+    ok=(await sha256(p))===u.password;
+  }else{
+    ok=String(u.password)===String(p);
+    if(ok){u.password=await sha256(p);saveUsers().catch(()=>{});}
+  }
+  if(!ok)throw new Error('invalid');
   currentUser=u;
   sessionStorage.setItem('dasty_session',code);
   $('loginError').classList.add('hidden');
@@ -385,8 +430,8 @@ if(b.id==='openEditCheck'){let s=sims.find(x=>x.id===$('editCheckSim').value);op
 if(b.id==='saveUser'){
   let code=$('uCode').value.trim().toLowerCase(),name=$('uName').value.trim(),role=$('uRole').value,pass=$('uPass').value;
   if(!code||!name||!pass||users.some(u=>u.code===code)){alert('Inserisci dati validi e un codice non già utilizzato.');return}
-  users.push({code,name,role,password:pass});
   (async()=>{
+    users.push({code,name,role,password:await sha256(pass)});
     try{await saveUsers();closeModal();render();}
     catch(err){console.error(err);alert('Errore nel salvataggio su Firestore.');}
   })();
@@ -397,8 +442,8 @@ if(b.classList.contains('editUser')){
   openModal(`<h3>Modifica utente</h3><input id="uName" value="${esc(u.name)}" placeholder="Nome e cognome"><select id="uRole"><option value="tutor" ${u.role==='tutor'?'selected':''}>Tutor</option><option value="supervisor" ${u.role==='supervisor'?'selected':''}>Supervisor</option><option value="admin" ${u.role==='admin'?'selected':''}>Amministratore</option></select><input id="uPass" placeholder="Nuova password (lascia vuoto per non cambiarla)"><div class="actions"><button id="updateUser" class="btn primary">Salva</button><button id="closeModal" class="btn">Annulla</button></div>`);
   $('updateUser').onclick=()=>{
     u.name=$('uName').value.trim();u.role=$('uRole').value;
-    if($('uPass').value)u.password=$('uPass').value;
     (async()=>{
+      if($('uPass').value)u.password=await sha256($('uPass').value);
       try{await saveUsers();closeModal();render();}
       catch(err){console.error(err);alert('Errore nel salvataggio su Firestore.');}
     })();
@@ -437,10 +482,10 @@ if(b.classList.contains('deleteSop')){
   return;
 }
 let s=sims.find(x=>x.id===b.dataset.id),fi=b.dataset.fighter;
-if(b.classList.contains('reportCaccia')||b.classList.contains('changeCaccia')){let f=s.fighters[+fi],supervisor=currentUser.role!=='tutor';openModal(`<h3>${supervisor?'Modifica stato':'Segnala guasto'} — ${esc(f.name)}</h3>${supervisor?`<select id="newStatus"><option value="ok">🟢 Funzionante</option><option value="warn">🟡 Guasto / Segnalato</option><option value="bad">🔴 Non funzionante</option></select>`:`<div class="note">Come Tutor puoi impostare solamente il giallo e descrivere il problema.</div>`}<textarea id="newComment" rows="4" style="margin-top:12px" placeholder="Motivo / commento">${esc(f.comment)}</textarea><div class="actions"><button id="saveState" class="btn primary">Salva</button><button id="closeModal" class="btn">Annulla</button></div>`);$('saveState').onclick=()=>{f.status=supervisor?$('newStatus').value:'warn';f.comment=$('newComment').value.trim();s.status=fightersOverall(s);s.comment='';save();closeModal();render()};return}
+if(b.classList.contains('reportCaccia')||b.classList.contains('changeCaccia')){let f=s.fighters[+fi],supervisor=currentUser.role!=='tutor';openModal(`<h3>${supervisor?'Modifica stato':'Segnala guasto'} — ${esc(f.name)}</h3>${supervisor?`<select id="newStatus"><option value="ok">Funzionante</option><option value="warn">Guasto / Segnalato</option><option value="bad">Non funzionante</option></select>`:`<div class="note">Come Tutor puoi impostare solamente il giallo e descrivere il problema.</div>`}<textarea id="newComment" rows="4" style="margin-top:12px" placeholder="Motivo / commento">${esc(f.comment)}</textarea><div class="actions"><button id="saveState" class="btn primary">Salva</button><button id="closeModal" class="btn">Annulla</button></div>`);$('saveState').onclick=()=>{f.status=supervisor?$('newStatus').value:'warn';f.comment=$('newComment').value.trim();s.status=fightersOverall(s);s.comment='';save();closeModal();render()};return}
 if(!s)return;
-if(b.classList.contains('details')){let extra=s.id==='caccia'?`<div class="caccia-grid">${s.fighters.map(f=>{let [fc,fl]=info(f.status);return `<div class="caccia-item"><b>${esc(f.name)}</b><div class="status" style="color:${fc};margin-top:5px"><i class="dot" style="background:${fc}"></i>${fl}</div>${f.comment?`<div class="note">${esc(f.comment)}</div>`:''}</div>`}).join('')}</div>`:'';openModal(`<h2>${s.icon} ${esc(s.name)}</h2><p class="muted">${esc(s.type)}</p><div class="note"><b>Stato generale:</b> <span style="color:${info(s.status)[0]}">${info(s.status)[1]}</span>${s.comment?`<br><b>Nota:</b> ${esc(s.comment)}`:''}</div>${extra}<button id="closeModal" class="btn" style="margin-top:14px">Chiudi</button>`);return}
-if(b.classList.contains('report')||b.classList.contains('change')){let supervisor=currentUser.role!=='tutor';openModal(`<h3>${supervisor?'Modifica stato':'Segnala guasto'} — ${esc(s.name)}</h3>${supervisor?`<select id="newStatus"><option value="ok">🟢 Funzionante</option><option value="warn">🟡 Guasto / Segnalato</option><option value="bad">🔴 Non funzionante</option></select>`:`<div class="note">Come Tutor puoi impostare solamente lo stato giallo e descrivere il problema.</div>`}<textarea id="newComment" rows="4" style="margin-top:12px" placeholder="Motivo / commento">${esc(s.comment)}</textarea><div class="actions"><button id="saveState" class="btn primary">Salva</button><button id="closeModal" class="btn">Annulla</button></div>`);$('saveState').onclick=()=>{s.status=supervisor?$('newStatus').value:'warn';s.comment=$('newComment').value.trim();save();closeModal();render()};return}
+if(b.classList.contains('details')){let extra=s.id==='caccia'?`<div class="caccia-grid">${s.fighters.map(f=>{let [fc,fl]=info(f.status);return `<div class="caccia-item"><b>${esc(f.name)}</b><div class="status" style="color:${fc};margin-top:5px"><i class="dot" style="background:${fc}"></i>${fl}</div>${f.comment?`<div class="note">${esc(f.comment)}</div>`:''}</div>`}).join('')}</div>`:'';openModal(`<h2 class="simname-row">${ic(simIconKey(s),26)}${esc(s.name)}</h2><p class="muted">${esc(s.type)}</p><div class="note"><b>Stato generale:</b> <span style="color:${info(s.status)[0]}">${info(s.status)[1]}</span>${s.comment?`<br><b>Nota:</b> ${esc(s.comment)}`:''}</div>${extra}<button id="closeModal" class="btn" style="margin-top:14px">Chiudi</button>`);return}
+if(b.classList.contains('report')||b.classList.contains('change')){let supervisor=currentUser.role!=='tutor';openModal(`<h3>${supervisor?'Modifica stato':'Segnala guasto'} — ${esc(s.name)}</h3>${supervisor?`<select id="newStatus"><option value="ok">Funzionante</option><option value="warn">Guasto / Segnalato</option><option value="bad">Non funzionante</option></select>`:`<div class="note">Come Tutor puoi impostare solamente lo stato giallo e descrivere il problema.</div>`}<textarea id="newComment" rows="4" style="margin-top:12px" placeholder="Motivo / commento">${esc(s.comment)}</textarea><div class="actions"><button id="saveState" class="btn primary">Salva</button><button id="closeModal" class="btn">Annulla</button></div>`);$('saveState').onclick=()=>{s.status=supervisor?$('newStatus').value:'warn';s.comment=$('newComment').value.trim();save();closeModal();render()};return}
 });
 $('modal').addEventListener('click',e=>{if(e.target===$('modal')||e.target.id==='closeModal')closeModal()});
 $('checkDetail').addEventListener('change',e=>{if(e.target.type==='checkbox'){let all=$('checkDetail').querySelectorAll('input[type=checkbox]'),done=[...all].filter(x=>x.checked).length;let p=$('progress');if(p)p.textContent=`${done} / ${all.length} completati`}});
@@ -454,7 +499,7 @@ $('saveChecklist').onclick=()=>{let steps=[...$('editRows').querySelectorAll('.c
 }
 function openChecklistDetail(s){
 $('checkDetail').classList.remove('hidden');
-$('checkDetail').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h3 style="margin:0">${s.icon} ${esc(s.name)} — Checklist accensione</h3><button id="closeCheck" class="btn small">Chiudi</button></div><div id="progress" class="muted" style="margin:6px 0 12px">0 / ${s.check.length} completati</div>${s.check.map((c,i)=>`<div class="checkitem"><label class="checkrow"><input type="checkbox" data-check-i="${i}"><span>${esc(c)}</span></label></div>`).join('')}`;
+$('checkDetail').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h3 style="margin:0" class="simname-row">${ic(simIconKey(s),20)}${esc(s.name)} — Checklist accensione</h3><button id="closeCheck" class="btn small">Chiudi</button></div><div id="progress" class="muted" style="margin:6px 0 12px">0 / ${s.check.length} completati</div>${s.check.map((c,i)=>`<div class="checkitem"><label class="checkrow"><input type="checkbox" data-check-i="${i}"><span>${esc(c)}</span></label></div>`).join('')}`;
 $('checkDetail').scrollIntoView({behavior:'smooth',block:'start'});
 }
 async function afterLogin(){
