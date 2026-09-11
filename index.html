@@ -189,6 +189,7 @@ header.topbar h1{margin:0;font-size:20px}
     </nav>
     <div class="sidebar-footer">
       <div id="roleLabel" style="margin-bottom:10px"></div>
+      <button id="changePass" class="btn" style="width:100%;margin-bottom:8px">Cambia password</button>
       <button id="logout" class="btn" style="width:100%"><span class="icon" data-ic="logout" style="width:16px;height:16px;margin-right:6px;vertical-align:-3px"></span>Esci</button>
     </div>
   </aside>
@@ -415,6 +416,24 @@ try{
 });
 $('brandLink').addEventListener('click',()=>window.open(BRAND_LINK_URL,'_blank'));
 $('logout').addEventListener('click',()=>{sessionStorage.removeItem('dasty_session');currentUser=null;$('app').classList.add('hidden');$('login').classList.remove('hidden');$('password').value=''});
+$('changePass').addEventListener('click',()=>{
+  openModal(`<h3>Cambia password</h3><p class="muted">Inserisci la password attuale e la nuova (due volte, per verifica).</p><input id="cpOld" type="password" placeholder="Password attuale"><input id="cpNew1" type="password" placeholder="Nuova password"><input id="cpNew2" type="password" placeholder="Ripeti nuova password"><div id="cpError" class="muted hidden" style="color:var(--red)"></div><div class="actions"><button id="cpSave" class="btn primary">Salva</button><button id="closeModal" class="btn">Annulla</button></div>`);
+  $('cpSave').onclick=()=>{
+    (async()=>{
+      const oldP=$('cpOld').value,n1=$('cpNew1').value,n2=$('cpNew2').value;
+      const showErr=t=>{$('cpError').textContent=t;$('cpError').classList.remove('hidden')};
+      let oldOk;
+      if(looksHashed(currentUser.password))oldOk=(await sha256(oldP))===currentUser.password;
+      else oldOk=String(currentUser.password)===String(oldP);
+      if(!oldOk){showErr('La password attuale non è corretta.');return}
+      if(!n1||n1.length<3){showErr('La nuova password è troppo corta.');return}
+      if(n1!==n2){showErr('Le due nuove password non coincidono.');return}
+      currentUser.password=await sha256(n1);
+      try{await saveUsers();closeModal();alert('Password aggiornata.');}
+      catch(err){console.error(err);showErr('Errore nel salvataggio su Firestore.');}
+    })();
+  };
+});
 document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>page(b.dataset.page)));
 $('newSop').addEventListener('click',()=>{if(currentUser.role==='tutor')return;$('sopForm').classList.remove('hidden');$('sopSim').innerHTML=sopScopeList().map(s=>`<option>${esc(s.name)}</option>`).join('')});
 $('cancelSop').addEventListener('click',()=>$('sopForm').classList.add('hidden'));
