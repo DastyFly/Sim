@@ -95,13 +95,7 @@ header.topbar h1{margin:0;font-size:20px}
 .nav .icon{color:currentColor;width:18px;height:18px}
 .simname-row{display:flex;align-items:center;gap:10px}
 .simname-row .icon{width:26px;height:26px;color:var(--sky)}
-
-/* ===== Dashboard: lista compatta, diversa dalla pagina Simulatori ===== */
-.rowlist{display:flex;flex-direction:column;gap:8px}
-.rowitem{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid var(--border);border-radius:10px;background:var(--panel);text-align:left;width:100%;box-shadow:var(--shadow)}
-.rowitem:hover{box-shadow:0 10px 26px rgba(18,32,58,.09)}
-.rowicon{width:22px;height:22px;color:var(--sky)}
-.rowname{flex:1;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:15.5px;color:var(--navy-900)}
+.sim-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 4px 10px rgba(18,32,58,.18)}
 
 .card{transition:box-shadow .15s,border-color .15s}
 .card:hover{box-shadow:0 10px 26px rgba(18,32,58,.09)}
@@ -182,7 +176,6 @@ header.topbar h1{margin:0;font-size:20px}
     <button id="brandLink" class="brand" style="border:0;background:transparent;cursor:pointer;padding:0" title="Apri sito DastyFlySim"><span class="icon" data-ic="plane" style="width:24px;height:24px"></span><b>DASTYFLYSIM</b></button>
     <nav>
       <button class="nav active" data-page="dashboard"><span class="icon" data-ic="dashboard"></span><span>Dashboard</span></button>
-      <button class="nav" data-page="simulatori"><span class="icon" data-ic="plane"></span><span>Simulatori</span></button>
       <button class="nav" data-page="sop"><span class="icon" data-ic="sop"></span><span>SOP</span></button>
       <button class="nav" data-page="checklist"><span class="icon" data-ic="check"></span><span>Checklist</span></button>
       <button id="usersNav" class="nav hidden" data-page="utenti"><span class="icon" data-ic="lock"></span><span>Accessi</span></button>
@@ -202,12 +195,7 @@ header.topbar h1{margin:0;font-size:20px}
 
       <section id="dashboardPage">
         <div id="stats" class="stats"></div>
-        <div class="panel"><h2>Stato simulatori</h2><p class="muted" style="margin-top:-6px">Vista rapida — apri "Simulatori" per dettagli e azioni.</p><div id="dashSims" class="rowlist"></div></div>
-      </section>
-
-      <section id="simulatoriPage" class="hidden">
-        <h2>Simulatori</h2><p class="muted">Stato operativo e segnalazioni.</p>
-        <div id="simGrid" class="grid"></div>
+        <div class="panel"><h2>Stato simulatori</h2><p class="muted" style="margin-top:-6px">Stato operativo e segnalazioni.</p><div id="simGrid" class="grid" style="margin-top:14px"></div></div>
       </section>
 
       <section id="sopPage" class="hidden">
@@ -317,6 +305,16 @@ logout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=
 user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.2-4 4-6 7.5-6s6.3 2 7.5 6"/></svg>'
 };
 function ic(name,size){return `<span class="icon" style="width:${size||18}px;height:${size||18}px">${ICONS[name]||''}</span>`}
+// Icone stilizzate (SVG, vista dall'alto) diverse per ogni tipo di velivolo — al posto della semplice linea unica.
+const fighterShape='<path d="M32 4 L38 24 L38 40 L34 52 L34 60 L30 60 L30 52 L26 40 L26 24 Z"/><path d="M26 26 L4 44 L12 48 L26 38 Z"/><path d="M38 26 L60 44 L52 48 L38 38 Z"/><path d="M28 46 L19 58 L25 59 L31 50 Z"/><path d="M36 46 L45 58 L39 59 L33 50 Z"/>';
+const simArt={
+'737':{bg:'linear-gradient(155deg,#2a5aa6,#123061)',svg:'<g fill="#eaf1ff"><path d="M32 4 C37 4 39 12 39 22 L39 46 C39 53 36 59 32 61 C28 59 25 53 25 46 L25 22 C25 12 27 4 32 4 Z"/><path d="M25 28 L4 42 L4 48 L25 40 Z"/><path d="M39 28 L60 42 L60 48 L39 40 Z"/><path d="M27 48 L18 58 L18 61 L28 55 Z"/><path d="M37 48 L46 58 L46 61 L36 55 Z"/></g><rect fill="#a9c2ec" x="30" y="14" width="4" height="26" rx="2"/>'},
+'320':{bg:'linear-gradient(155deg,#123061,#08152b)',svg:'<g fill="#dfe8fb"><path d="M32 4 C37 4 39 12 39 22 L39 46 C39 53 36 59 32 61 C28 59 25 53 25 46 L25 22 C25 12 27 4 32 4 Z"/><path d="M25 28 L4 42 L4 47 L25 40 Z"/><path d="M39 28 L60 42 L60 47 L39 40 Z"/><path d="M27 48 L18 58 L18 61 L28 55 Z"/><path d="M37 48 L46 58 L46 61 L36 55 Z"/></g><path fill="#9fb6e0" d="M4 42 L4 47 L9 47 Z M60 42 L60 47 L55 47 Z"/><rect fill="#d81324" x="30" y="14" width="4" height="26" rx="2"/>'},
+'heli':{bg:'linear-gradient(155deg,#1c9166,#0e5b3f)',svg:'<line x1="4" y1="19" x2="60" y2="19" stroke="#eafff5" stroke-width="3" stroke-linecap="round"/><line x1="32" y1="6" x2="32" y2="19" stroke="#eafff5" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="19" r="3.5" fill="#eafff5"/><ellipse cx="32" cy="38" rx="10" ry="15" fill="#eafff5"/><circle cx="32" cy="30" r="5.5" fill="#bdf0da"/><rect x="29" y="50" width="6" height="14" rx="3" fill="#eafff5"/><circle cx="32" cy="63" r="2.6" fill="#eafff5"/>'},
+'hornet':{bg:'linear-gradient(155deg,#d81324,#7a0c15)',svg:'<g fill="#ffe9eb"><path d="M32 4 L38 24 L38 40 L34 52 L34 60 L30 60 L30 52 L26 40 L26 24 Z"/><path d="M26 26 L4 44 L12 48 L26 38 Z"/><path d="M38 26 L60 44 L52 48 L38 38 Z"/></g><g fill="#3a0810"><path d="M28 46 L19 58 L25 59 L31 50 Z"/><path d="M36 46 L45 58 L39 59 L33 50 Z"/></g>'},
+'caccia':{bg:'linear-gradient(155deg,#c8790b,#7a4d09)',svg:'<g fill="#ffe4b8" opacity=".85" transform="translate(-6,10) scale(.42)">'+fighterShape+'</g><g fill="#fff6ea" transform="translate(14,-8) scale(.58)">'+fighterShape+'</g><g fill="#ffdca6" opacity=".9" transform="translate(6,26) scale(.4)">'+fighterShape+'</g>'}
+};
+function simIconTile(s){let a=simArt[s.id]||{bg:'linear-gradient(155deg,#1a4080,#08152b)',svg:''};return `<div class="sim-icon" style="background:${a.bg}" aria-hidden="true"><svg viewBox="0 0 64 64" width="34" height="34">${a.svg}</svg></div>`}
 function simIconKey(s){return s.id==='heli'?'heli':s.id==='caccia'?'squad':'plane'}
 document.querySelectorAll('[data-ic]').forEach(el=>{el.innerHTML=ICONS[el.dataset.ic]||''});
 // Hash delle password (SHA-256): evita che restino leggibili in chiaro nel database.
@@ -378,7 +376,7 @@ function roleLabel(r){return r==='admin'?'Amministratore':r==='supervisor'?'Supe
 function simCard(s){
 let [c,l]=info(s.status);
 let fighters=s.id==='caccia'?`<div class="caccia-grid">${s.fighters.map((f,i)=>{let [fc,fl]=info(f.status);return `<div class="caccia-item"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(f.name)}</b><span class="status" style="color:${fc}"><i class="dot" style="background:${fc}"></i>${fl}</span></div>${f.comment?`<div class="note">${esc(f.comment)}</div>`:''}<div class="actions">${currentUser.role==='tutor'?`<button class="btn small reportCaccia" data-id="${s.id}" data-fighter="${i}">Segnala</button>`:`<button class="btn small changeCaccia" data-id="${s.id}" data-fighter="${i}">Modifica stato</button>`}</div></div>`}).join('')}</div>`:'';
-return `<article class="card"${isFighterSim(s)?' style="grid-column:1/-1"':''}><div class="simtop"><div><div class="simname-row">${ic(simIconKey(s),25)}<div class="simname">${esc(s.name)}</div></div><div class="type">${esc(s.type)}</div></div><div class="status" style="color:${c}"><i class="dot" style="background:${c}"></i>${l}</div></div>
+return `<article class="card"${isFighterSim(s)?' style="grid-column:1/-1"':''}><div class="simtop"><div style="display:flex;gap:12px;align-items:center">${simIconTile(s)}<div><div class="simname">${esc(s.name)}</div><div class="type">${esc(s.type)}</div></div></div><div class="status" style="color:${c}"><i class="dot" style="background:${c}"></i>${l}</div></div>
 ${fighters}${s.comment?`<div class="note"><b>Nota:</b> ${esc(s.comment)}</div>`:''}
 <div class="actions"><button class="btn details" data-id="${s.id}">Dettagli</button>${s.id!=='caccia'?(currentUser.role==='tutor'?`<button class="btn report" data-id="${s.id}">Segnala guasto</button>`:`<button class="btn change" data-id="${s.id}">Modifica stato</button>`):''}</div></article>`;
 }
@@ -388,11 +386,10 @@ $('usersNav').classList.toggle('hidden',currentUser.role!=='admin');
 $('newSop').classList.toggle('hidden',currentUser.role==='tutor');
 $('editChecklist').classList.toggle('hidden',currentUser.role==='tutor');
 $('stats').innerHTML=sims.map(s=>`<div class="stat"><small>${esc(s.name)}</small><b style="color:${info(s.status)[0]}">${info(s.status)[1]}</b></div>`).join('');
-$('dashSims').innerHTML=sortedForDisplay(sims).map(s=>{let [c,l]=info(s.status);return `<button class="rowitem" data-page-open="simulatori"><span class="rowicon">${ic(simIconKey(s),22)}</span><span class="rowname">${esc(s.name)}</span><span class="status" style="color:${c}"><i class="dot" style="background:${c}"></i>${l}</span></button>`}).join('');
 $('simGrid').innerHTML=sortedForDisplay(sims).map(simCard).join('');
 if($('sopFilterSim')&&!$('sopFilterSim').dataset.filled){$('sopFilterSim').insertAdjacentHTML('beforeend',sopScopeList().map(s=>`<option value="${esc(s.name)}">${esc(s.name)}</option>`).join(''));$('sopFilterSim').dataset.filled='1'}
 renderSopList();
-$('checkList').innerHTML=sims.map(s=>`<button class="card" style="text-align:left" data-check="${s.id}"><div class="simname-row">${ic(simIconKey(s),22)}<b>${esc(s.name)}</b></div><div class="muted" style="margin-top:5px">Checklist di accensione · ${s.check.length} punti</div></button>`).join('');
+$('checkList').innerHTML=sims.map(s=>`<button class="card" style="text-align:left;display:flex;gap:12px;align-items:center" data-check="${s.id}">${simIconTile(s)}<div><b>${esc(s.name)}</b><div class="muted" style="margin-top:5px">Checklist di accensione · ${s.check.length} punti</div></div></button>`).join('');
 if(currentUser.role==='admin')$('usersTable').innerHTML=users.map((u,i)=>`<tr><td><b>${esc(u.code)}</b></td><td>${esc(u.name)}</td><td><span class="badge ${u.role}">${roleLabel(u.role)}</span></td><td>••••••</td><td><button class="btn small editUser" data-i="${i}">Modifica</button> ${u.code!=='dastyadmin'?`<button class="btn small danger deleteUser" data-i="${i}">Elimina</button>`:''}</td></tr>`).join('');
 $('accName').textContent=currentUser.name||'—';
 $('accCode').textContent=currentUser.code;
@@ -409,8 +406,8 @@ let list=sops.map((x,i)=>({...x,_i:i}))
 let canEdit=currentUser.role!=='tutor';
 $('sopList').innerHTML=list.length?list.map(x=>`<article class="card"><div class="sop"><div><div class="simname-row">${ic('sop',18)}<b>${x.code?`<span class="muted">${esc(x.code)}</span> · `:''}${esc(x.title)}</b></div><div class="muted">${esc(x.sim)} · Versione ${esc(x.version)}</div></div><div class="actions" style="margin-top:0"><button class="btn small viewSop" data-i="${x._i}">Apri</button>${canEdit?`<button class="btn small editSop" data-i="${x._i}">Modifica</button><button class="btn small danger deleteSop" data-i="${x._i}">Elimina</button>`:''}</div></div><div class="sopbody hidden" id="sopbody${x._i}">${esc(x.text)}</div></article>`).join(''):'<p class="muted">Nessuna SOP trovata.</p>';
 }
-const pageTitles={dashboard:'Dashboard',simulatori:'Simulatori',sop:'SOP',checklist:'Checklist di accensione',utenti:'Gestione accessi',account:'Il mio account'};
-function page(p){['dashboard','simulatori','sop','checklist','utenti','account'].forEach(x=>$(`${x}Page`).classList.toggle('hidden',x!==p));document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if($('pageTitle'))$('pageTitle').textContent=pageTitles[p]||''}
+const pageTitles={dashboard:'Dashboard',sop:'SOP',checklist:'Checklist di accensione',utenti:'Gestione accessi',account:'Il mio account'};
+function page(p){['dashboard','sop','checklist','utenti','account'].forEach(x=>$(`${x}Page`).classList.toggle('hidden',x!==p));document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if($('pageTitle'))$('pageTitle').textContent=pageTitles[p]||''}
 function openModal(html){$('modalContent').innerHTML=html;$('modal').classList.remove('hidden')}
 function closeModal(){$('modal').classList.add('hidden')}
 $('loginForm').addEventListener('submit',async e=>{
