@@ -294,6 +294,8 @@ window.dastyDb={
 // Icone minimal a linea singola (stroke=currentColor), usate al posto delle emoji.
 const ICONS={
 plane:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4 9l16 3M4 15l16-3M9 20l3-2 3 2"/></svg>',
+dart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>',
+fighter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l7 19-7-4-7 4 7-19z"/></svg>',
 heli:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h20M12 6v4M7 10h10a3 3 0 013 3v1a5 5 0 01-5 5H9a5 5 0 01-5-5v-1a3 3 0 013-3z"/><path d="M9 19l-2 2m8-2l2 2"/></svg>',
 squad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v7M6 7l12 2M6 11l12-2M9 15l3-1.5 3 1.5"/><path d="M4 19l3-2M20 19l-3-2"/></svg>',
 dashboard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/></svg>',
@@ -304,7 +306,7 @@ logout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=
 user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.2-4 4-6 7.5-6s6.3 2 7.5 6"/></svg>'
 };
 function ic(name,size){return `<span class="icon" style="width:${size||18}px;height:${size||18}px">${ICONS[name]||''}</span>`}
-function simIconKey(s){return s.id==='heli'?'heli':s.id==='caccia'?'squad':'plane'}
+function simIconKey(s){return s.id==='320'?'dart':s.id==='hornet'?'fighter':s.id==='heli'?'heli':s.id==='caccia'?'squad':'plane'}
 document.querySelectorAll('[data-ic]').forEach(el=>{el.innerHTML=ICONS[el.dataset.ic]||''});
 // Hash delle password (SHA-256): evita che restino leggibili in chiaro nel database.
 async function sha256(text){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('')}
